@@ -1,4 +1,3 @@
-#include <stdlib.h>
 #include "../includes/common.h" 
 #include "../includes/cJSON.h"
 /**
