@@ -1,5 +1,7 @@
 #include "../includes/common.h" 
 #include "../includes/cJSON.h"
+#include "../includes/test.h"
+#include "../includes/submit.h"
 /**
  * related with problem module
 */
@@ -13,13 +15,16 @@ static int get(int argc, char*argv[]) {
 }
 
 static int submit(int argc, char*argv[]) {
-    return 0;
+    int bias = 0;       // db 에서 가져온 bias 를 저장할 곳
+    
 }
 
 static int test(int argc, char*argv[]) {
     FILE *testcase_file;                        
     char* json_data = NULL;                     // 파일 내용 저장할 변수
     char file_name[64] = "../testcase/a.json";  // 파일 위치
+    char* user_file = (char*) malloc(128 * sizeof(char));
+    char* user_output = (char*) malloc(128 * sizeof(char));
     long file_size;
     size_t result;
 
@@ -53,13 +58,21 @@ static int test(int argc, char*argv[]) {
     cJSON* input = cJSON_GetObjectItem(root, "input");
     cJSON* output = cJSON_GetObjectItem(root, "output");
 
-    if (input->valuestring) {
-        printf("input: %s\n", input->valuestring);
-    } else if (input->valueint) {
-        printf("input: %d\n", input->valueint);
-    } else if (input->valuedouble) {
-        printf("input: %f\n", input->valuedouble);
+    // 사용자가 테스트해보려는 파일 정보 알아내기
+    printf("Input your location of compiled C file: ");
+    scanf("%s", user_file);
+    printf("%s\n", user_file);
+
+    execute(user_file, input->valuestring, user_output);
+
+    if (!strcmp(user_output, output->valuestring)) {
+        printf("PASS!\n");
+    } else {
+        printf("FAILED...\n");
     }
+
+    printf("Your output is: %s\n", user_output);
+    printf("Expected output is: %s\n", output->valuestring);
 
     free(json_data);
     fclose(testcase_file);
@@ -90,10 +103,7 @@ int problem(int argc, char*argv[]) {
     } else if (!strncmp(command, "submit", 6)) {
         // TODO
         printf("submit!\n");
-        if (submit(argc, argv)) {
-            fprintf(stderr, "ERROR\n");
-            exit(-1);
-        }
+        submit(argc, argv);
     } else if (!strncmp(command, "test", 4)) {
         // TODO
         printf("test!\n");
