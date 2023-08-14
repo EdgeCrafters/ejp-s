@@ -1,7 +1,7 @@
 #include "../includes/common.h" 
 #include "../includes/cJSON.h"
 #include "../includes/test.h"
-#include "../includes/submit.h"
+// #include "../includes/http.h"
 /**
  * related with problem module
 */
@@ -15,8 +15,37 @@ static int get(int argc, char*argv[]) {
 }
 
 static int submit(int argc, char*argv[]) {
-    int bias = 0;       // db 에서 가져온 bias 를 저장할 곳
-    
+    int bias = 0;               // db 에서 가져온 bias 를 저장할 변수
+    int repoId = 0;             // repo 정보
+    int hiddenCaseId = 0;       // hiddenCase 정보
+
+    // 우선 로그인 먼저
+    // 사용자에게 host 입력받기
+    char* user_host = (char*) malloc(128 * sizeof(char));
+    printf("Input your host address: ");
+    scanf("%s", user_host);
+    userLogin(user_host);
+
+    // connect.sid -> session 확인
+
+    // 나중에 구현 필요
+    repoId = getRepoId();
+
+    // 나중에 구현 필요
+    hiddenCaseId = getHiddenCaseId();
+
+    // 나중에 구현 필요
+    bias = getBias(repoId, hiddenCaseId);
+
+    // 사용자에게 output 위치 받기
+    char* user_output = (char*) malloc(128 * sizeof(char));
+    printf("Input your location of output file: ");
+    scanf("%s", user_output);
+
+    printf("repoId: %d\nhiddenCaseId: %d\nbias: %d\nlocation of output: %s\n", repoId, hiddenCaseId, bias, user_output);
+
+    // cookie 정보 확인하기
+    getSessionInfo();
 }
 
 static int test(int argc, char*argv[]) {

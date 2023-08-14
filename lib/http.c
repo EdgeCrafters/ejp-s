@@ -116,8 +116,8 @@ int logout(const char home[])
 	return 0;
 }
 
-int initRepo(const char home[], const char repoID[], char buffer[], size_t bufSize)
-{
+int initRepo(const char home[], const char repoID[], char buffer[], size_t bufSize) {
+
 	char url[URLSIZE],cookie[BUFSIZE];
 	CURL *curl;
 	CURLcode res;
@@ -162,4 +162,36 @@ int initRepo(const char home[], const char repoID[], char buffer[], size_t bufSi
 	}
 
 	return 0;
+}
+
+// repoId 와 hiddenCaseId 를 기반으로 bias 값을 반환합니다.
+int getBiasHTTP(int repoId, int hiddenCaseId) {
+	// TODO
+	// test 용 bias
+	return 27;
+}
+
+// repoId 값을 반환합니다.
+int getRepoIdHTTP() {
+	// TODO
+	// test 용 repoId
+	return 1;
+}
+
+// hiddenCaseId 값을 반환합니다.
+int getHiddenCaseIdHTTP() {
+	// TODO
+	// test 용 hiddenCaseId
+	return 1;
+}
+
+// 로그인 시 session 정보를 출력합니다.
+void getSessionInfoHTTP() {
+	printf("session ID: %s\n", session.data);
+	printf("isStore: %d\n", session.isStore);
+}
+
+// sessionId 를 캐싱합니다.
+void cacheSessionIdHTTP() {
+	// TODO
 }

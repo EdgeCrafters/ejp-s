@@ -59,3 +59,33 @@ char* getExtension(char *target)
 		;
 	return target+i;
 }
+
+// http.c 에 있는 getBiasHTTP() 를 호출합니다.
+int getBias(int repoId, int hiddenCaseId) {
+	// TODO
+	// test 용 bias
+	return getBiasHTTP(repoId, hiddenCaseId);
+}
+
+// http.c 에 있는 getRepoIdHTTP() 를 호출합니다.
+int getRepoId() {
+	// TODO
+	// test 용 repoId
+	return getRepoIdHTTP();
+}
+
+// http.c 에 있는 getHiddenCaseIdHTTP() 를 호출합니다.
+int getHiddenCaseId() {
+	// TODO
+	// test 용 hiddenCaseId
+	return getHiddenCaseIdHTTP();
+}
+
+// http.c 에 있는 getSessionInfoHTTP() 를 호출합니다.
+void getSessionInfo() {
+	getSessionInfoHTTP();
+}
+
+void cacheSessionId() {
+	cacheSessionIdHTTP();
+}

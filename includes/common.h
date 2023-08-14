@@ -24,3 +24,11 @@ int parseOpt(int argc, char *argv[], const char targetOpt[], const int optNum, c
 void userLogin(const char home[]);
 void userLogout(const char home[]);
 char* getExtension(char *target);
+
+// 아래 함수들은 http.h 에 있는 함수들을 사용하는 함수입니다.
+// 아래 함수들의 내용은 common.c 에 있습니다.
+int getBias(int repoId, int hiddenCaseId);
+int getRepoId();
+int getHiddenCaseId();
+void getSessionInfo();
+void cacheSessionId();
