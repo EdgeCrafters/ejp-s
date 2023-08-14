@@ -6,8 +6,20 @@
  * related with problem module
 */
 
+// 모든 문제들을 가져옵니다.
 static int show(int argc, char*argv[]) {
-    return 0;
+    // char* user_host = (char*) malloc(128 * sizeof(char));
+    // if (argc == 5 && strcmp(argv[3], "h") == 0) {
+    //     user_host = argv[4];
+    // } else {
+    //     printf("Please see the command description typing \"%s %s \"\n", argv[0], argv[1]);
+    //     exit(EXIT_FAILURE);
+    // }
+
+    // userLogin(user_host);
+    // showAllRepos();
+
+    return 1;
 }
 
 static int get(int argc, char*argv[]) {
@@ -52,6 +64,9 @@ static int submit(int argc, char*argv[]) {
     } else {
         printf("Failed to request...\n");
     }
+
+    free(user_output);
+    free(user_host);
 }
 
 static int test(int argc, char*argv[]) {
@@ -109,7 +124,10 @@ static int test(int argc, char*argv[]) {
     printf("Your output is: %s\n", user_output);
     printf("Expected output is: %s\n", output->valuestring);
 
+    cJSON_Delete(root);
     free(json_data);
+    free(user_output);
+    free(user_file);
     fclose(testcase_file);
 }
 
@@ -124,10 +142,7 @@ int problem(int argc, char*argv[]) {
     if(!strncmp(command,"show",4)) {
         // TODO
         printf("show!\n");
-        if (show(argc, argv)) {
-            fprintf(stderr, "ERROR\n");
-            exit(-1);
-        }
+        show(argc, argv);
     } else if (!strncmp(command, "get", 3)) {
         // TODO
         printf("get!\n");

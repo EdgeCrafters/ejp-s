@@ -4,6 +4,7 @@
 // int workbook(int argc, char*argv[]);
 int problem(int argc, char*argv[]);
 int testcase(int argc, char*argv[]);
+int repo(int argc, char*argv[]);
 
 int main(int argc, char*argv[])
 {
@@ -32,6 +33,9 @@ int main(int argc, char*argv[])
 	} else if (!strncmp(command, "testcase", 8)) {
 		printf("use testcase command : \n");
 		return testcase(argc, argv);
+	} else if (!strncmp(command, "repo", 4)) {
+		printf("use repo command : \n");
+		return repo(argc, argv);
 	}
 	return 0;
 }

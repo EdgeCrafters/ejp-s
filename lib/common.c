@@ -73,6 +73,17 @@ int postResult(int repoId, int hiddenCaseId) {
 	return postResultHTTP(repoId, hiddenCaseId);
 } 
 
+// http.c 에 있는 getAllReposHTTP() 를 호출합니다.
+int getAllRepos() {
+	// TODO
+	return getAllReposHTTP();
+}
+
+// http.c 에 있는 showAllReposHTTP() 를 호출합니다.
+void showAllRepos(char* user_host) {
+	return showAllReposHTTP(user_host);
+}
+
 // http.c 에 있는 getRepoIdHTTP() 를 호출합니다.
 int getRepoId() {
 	// TODO

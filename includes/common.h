@@ -30,6 +30,8 @@ char* getExtension(char *target);
 
 int getBias(int repoId, int hiddenCaseId);
 int postResult(int repoId, int hiddenCaseId);
+int getAllRepos();
+void showAllRepos(char* user_host);
 int getRepoId();
 int getHiddenCaseId();
 void getSessionInfo();

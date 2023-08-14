@@ -4,14 +4,17 @@ void basicInfo(void)
 {
 	printf("Hello! Welcome to Edged Judger Platform for Student (EJP-S)\n");
 	printf("You can use command below: \n");
-	printf("1. problem\n\n");
-	printf("2. testcase\n\n");
+	printf("1. repo\n\n");
+	printf("2. problem\n\n");
+	printf("3. testcase\n\n");
 }
 
 void repoInfo(void)
 {
 	basicInfo();
-	printf("repo command : \n");
+	printf("repo command : \n\n");
+	printf("1. show: It shows the repositories you can access. \n\n");
+	printf(":) \n\n");
 }
 
 void workbookInfo(void)
@@ -36,4 +39,5 @@ void testcaseInfo(void)
 	basicInfo();
 	printf("testcase command : \n\n");
 	printf("1. get: Receive testcases published by your instructor.\n\n ");
+	printf(":) \n\n");
 }

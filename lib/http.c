@@ -1,12 +1,54 @@
 #include "http.h"
+#include "../includes/cJSON.h"
 
 struct cookie session = {.isStore = 0};
+int option = 0;
 
 static size_t plainWrite(void *data, size_t size, size_t nmemb, void *clientp)
 {
 	if(clientp)
 		strncpy((char*)clientp, (char*)data, nmemb);
 	return size*nmemb;
+}
+
+// showAllReposHTTP() 의 응답 결과를 보여줍니다.
+// option 이 0일 경우에는 보여주기만 하고 1일 경우에는 해당 repo 들에 대한 정보를 담고 있는 json 파일을 만들어줍니다.
+static size_t displayReposResponse(void* contents, size_t size, size_t nmemb, void* clientp, int option) {
+	size_t totalSize = size * nmemb;
+	cJSON *response = cJSON_Parse((const char*) contents);	// json 응답결과 파싱
+
+	if (response) {
+		cJSON *contentArray = cJSON_GetObjectItem(response, "content");
+
+		if (contentArray) {
+			int numItems = cJSON_GetArraySize(contentArray);
+
+			printf("Information of your repositories: \n");
+			printf("%-20s %-20s", "repositoryId", "repositoryName");
+			for (int i=0; i<numItems; i++) {
+				cJSON *item = cJSON_GetArrayItem(contentArray, i);
+
+				if (item) {
+					cJSON *repoId = cJSON_GetObjectItem(item, "repoId");
+					cJSON *repoName = cJSON_GetObjectItem(item, "repoName");
+
+					if (repoId && repoName) {
+						printf("%-20d %-20s", repoId->valueint, repoName->valuestring);
+					}
+				}
+
+				cJSON_Delete(item);
+			}
+		} else {
+			printf("Your repositories are empty. Please contact the Tutor.\n");
+			return 0;
+		}
+	} else {
+		printf("Failed to request...\n");
+		return 0;
+	}
+
+	cJSON_Delete(response);
 }
 
 size_t storeCookie(char *buffer, size_t size, size_t nitems, void *userdata)
@@ -164,6 +206,8 @@ int initRepo(const char home[], const char repoID[], char buffer[], size_t bufSi
 	return 0;
 }
 
+// - - - - submit 관련 - - - - 
+
 // repoId 와 hiddenCaseId 를 기반으로 bias 값을 반환합니다.
 int getBiasHTTP(int repoId, int hiddenCaseId) {
 	// TODO
@@ -177,6 +221,11 @@ int postResultHTTP(int repoId, int hiddenCaseId) {
 	return 1;
 }
 
+// - - - - submit 관련 - - - -
+
+
+// - - - - repo 관련 - - - -
+
 // repoId 값을 반환합니다.
 int getRepoIdHTTP() {
 	// TODO
@@ -184,12 +233,72 @@ int getRepoIdHTTP() {
 	return 1;
 }
 
+// 현재 이용가능한 repo 정보들을 가져와서 directory 로 만들어둡니다.
+int getAllReposHTTP() {
+	// TODO
+	return 0;
+}
+
+// 현재 이용가능한 repo 정보들을 출력합니다. 
+void showAllReposHTTP(char* user_host) {
+	// TODO
+
+	const char* route_path = "/repos";
+	// char* url = (char*) malloc(512 * sizeof(char));
+	char* url = user_host;
+	CURL* curl;
+	CURLcode response;
+	struct curl_list *list = NULL;
+	long stat;
+
+	// memset(url, 0, URLSIZE);
+	// printf("Input host address: ");
+	// scanf("%s", url);
+
+	// url 합치기
+	strncat(url, route_path, 128 - strlen(url) - 1);
+
+	curl = curl_easy_init();
+
+	if (curl) {
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
+
+		list = curl_slist_append(list, "Accept: */*");
+		list = curl_slist_append(list, "Content-Type: application/json");
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+
+		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, storeCookie);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, displayReposResponse);
+
+		response = curl_easy_perform(curl);
+
+		if (response != CURLE_OK) 
+			return;
+
+		curl_easy_cleanup(curl);
+		free(url);
+	} else {
+		fprintf(stderr, "Error on curl...\n");
+		return;
+	}
+}
+
+// - - - - repo 관련 - - - -
+
+
+// - - - - testcase 관련 - - - -
+
 // hiddenCaseId 값을 반환합니다.
 int getHiddenCaseIdHTTP() {
 	// TODO
 	// test 용 hiddenCaseId
 	return 1;
 }
+
+// - - - - testcase 관련 - - - -
 
 // 로그인 시 session 정보를 출력합니다.
 void getSessionInfoHTTP() {
