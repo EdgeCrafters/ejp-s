@@ -26,8 +26,6 @@ static int submit(int argc, char*argv[]) {
     scanf("%s", user_host);
     userLogin(user_host);
 
-    // connect.sid -> session 확인
-
     // 나중에 구현 필요
     repoId = getRepoId();
 
@@ -46,6 +44,14 @@ static int submit(int argc, char*argv[]) {
 
     // cookie 정보 확인하기
     getSessionInfo();
+    printf("\n\n");
+
+    // 실제 요청을 보내야 하는 곳
+    if (postResult(repoId, hiddenCaseId)) {
+        printf("The request was sent successfully!\n");
+    } else {
+        printf("Failed to request...\n");
+    }
 }
 
 static int test(int argc, char*argv[]) {

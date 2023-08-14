@@ -67,6 +67,12 @@ int getBias(int repoId, int hiddenCaseId) {
 	return getBiasHTTP(repoId, hiddenCaseId);
 }
 
+// http.c 에 있는 postResultHTTP() 를 호출합니다.
+int postResult(int repoId, int hiddenCaseId) {
+	// TODO
+	return postResultHTTP(repoId, hiddenCaseId);
+} 
+
 // http.c 에 있는 getRepoIdHTTP() 를 호출합니다.
 int getRepoId() {
 	// TODO

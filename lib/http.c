@@ -171,6 +171,12 @@ int getBiasHTTP(int repoId, int hiddenCaseId) {
 	return 27;
 }
 
+// repoId 와 hiddenCaseId 를 기반으로 hiddenCase 를 맞추었는지 여부를 확인합니다.
+int postResultHTTP(int repoId, int hiddenCaseId) {
+	// TODO
+	return 1;
+}
+
 // repoId 값을 반환합니다.
 int getRepoIdHTTP() {
 	// TODO
