@@ -24,7 +24,7 @@ static size_t displayReposResponse(void* contents, size_t size, size_t nmemb, vo
 			int numItems = cJSON_GetArraySize(contentArray);
 
 			printf("Information of your repositories: \n");
-			printf("%-20s %-20s", "repositoryId", "repositoryName");
+			printf("%-20s %-20s\n", "repositoryId", "repositoryName");
 			for (int i=0; i<numItems; i++) {
 				cJSON *item = cJSON_GetArrayItem(contentArray, i);
 
@@ -33,11 +33,9 @@ static size_t displayReposResponse(void* contents, size_t size, size_t nmemb, vo
 					cJSON *repoName = cJSON_GetObjectItem(item, "repoName");
 
 					if (repoId && repoName) {
-						printf("%-20d %-20s", repoId->valueint, repoName->valuestring);
+						printf("%-20d %-20s\n", repoId->valueint, repoName->valuestring);
 					}
 				}
-
-				cJSON_Delete(item);
 			}
 		} else {
 			printf("Your repositories are empty. Please contact the Tutor.\n");
@@ -49,6 +47,8 @@ static size_t displayReposResponse(void* contents, size_t size, size_t nmemb, vo
 	}
 
 	cJSON_Delete(response);
+
+	return totalSize;
 }
 
 size_t storeCookie(char *buffer, size_t size, size_t nitems, void *userdata)
@@ -242,21 +242,17 @@ int getAllReposHTTP() {
 // 현재 이용가능한 repo 정보들을 출력합니다. 
 void showAllReposHTTP(char* user_host) {
 	// TODO
-
-	const char* route_path = "/repos";
-	// char* url = (char*) malloc(512 * sizeof(char));
-	char* url = user_host;
+	char url[URLSIZE];
+	char buf[512];
+	sprintf(buf, "Cookie: %s", session.data);	// sessionId 설정
 	CURL* curl;
 	CURLcode response;
 	struct curl_list *list = NULL;
 	long stat;
 
-	// memset(url, 0, URLSIZE);
-	// printf("Input host address: ");
-	// scanf("%s", url);
-
 	// url 합치기
-	strncat(url, route_path, 128 - strlen(url) - 1);
+	memset(url, 0, URLSIZE);
+	sprintf(url, "%s/repos", user_host);
 
 	curl = curl_easy_init();
 
@@ -267,9 +263,9 @@ void showAllReposHTTP(char* user_host) {
 
 		list = curl_slist_append(list, "Accept: */*");
 		list = curl_slist_append(list, "Content-Type: application/json");
+		list = curl_slist_append(list, buf);
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
 
-		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, storeCookie);
 		curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
 		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, displayReposResponse);
 
@@ -279,7 +275,6 @@ void showAllReposHTTP(char* user_host) {
 			return;
 
 		curl_easy_cleanup(curl);
-		free(url);
 	} else {
 		fprintf(stderr, "Error on curl...\n");
 		return;
