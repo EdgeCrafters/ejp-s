@@ -13,7 +13,8 @@ void repoInfo(void)
 {
 	basicInfo();
 	printf("repo command : \n\n");
-	printf("1. show: It shows the repositories you can access. \n\n");
+	printf("1. show: It shows the repositories you can access. This command requires \"h\" option that means host address. \n\n");
+	printf("2. get: It fetches all repositories information that you can access. This command requires \"h\" option that means host address. \n\n");
 	printf(":) \n\n");
 }
 

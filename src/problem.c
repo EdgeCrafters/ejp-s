@@ -8,17 +8,6 @@
 
 // 모든 문제들을 가져옵니다.
 static int show(int argc, char*argv[]) {
-    // char* user_host = (char*) malloc(128 * sizeof(char));
-    // if (argc == 5 && strcmp(argv[3], "h") == 0) {
-    //     user_host = argv[4];
-    // } else {
-    //     printf("Please see the command description typing \"%s %s \"\n", argv[0], argv[1]);
-    //     exit(EXIT_FAILURE);
-    // }
-
-    // userLogin(user_host);
-    // showAllRepos();
-
     return 1;
 }
 

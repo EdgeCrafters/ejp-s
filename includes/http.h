@@ -17,7 +17,7 @@ int initRepo(const char home[], const char repoID[], char buffer[], size_t bufSi
 
 int getBiasHTTP(int repoId, int hiddenCaseId);
 int postResultHTTP(repoId, hiddenCaseId);
-int getAllReposHTTP();
+int getAllReposHTTP(char* user_host);
 void showAllReposHTTP(char* user_host);
 int getRepoIdHTTP();
 int getHiddenCaseIdHTTP();

@@ -1,12 +1,14 @@
 #pragma once
 #include <stddef.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <dirent.h>
 
 #define STRSIZE 1048576
 
@@ -30,7 +32,7 @@ char* getExtension(char *target);
 
 int getBias(int repoId, int hiddenCaseId);
 int postResult(int repoId, int hiddenCaseId);
-int getAllRepos();
+int getAllRepos(char* user_host);
 void showAllRepos(char* user_host);
 int getRepoId();
 int getHiddenCaseId();
