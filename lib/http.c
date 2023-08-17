@@ -60,6 +60,7 @@ static void makeReposJsonFile(int numItems, cJSON *contentArray, char *dir_name)
 		}
 	}
 }
+
 // option 이 0일 경우에는 보여주기만 하고 1일 경우에는 해당 repo 들에 대한 정보를 담고 있는 json 파일을 만들어줍니다.
 static size_t reposResponse(void* contents, size_t size, size_t nmemb, void* clientp) {
 	size_t totalSize = size * nmemb;
@@ -117,6 +118,36 @@ static size_t reposResponse(void* contents, size_t size, size_t nmemb, void* cli
 	}
 
 	cJSON_Delete(response);
+
+	return totalSize;
+}
+
+// option 이 0일 경우에는 보여주기만 하고 1일 경우에는 해당 problem 들을 가져옴.
+static size_t problemResponse(void* contents, size_t size, size_t nmemb, void* clientp) {
+	size_t totalSize = size * nmemb;
+	cJSON *response = cJSON_Parse((const char*) contents);
+	cJSON *message = cJSON_GetObjectItem(response, "message");	// error 가 났을 경우 message 값이 있음.
+
+	if (response && message == NULL) {
+		int responseSize = cJSON_GetArraySize(response);
+
+		
+		printf("\n\nInformation of problems: \n");
+		printf("%-10s %-10s\n", "id", "title");
+
+		for (int i=0; i<responseSize; i++) {
+			cJSON *item = cJSON_GetArrayItem(response, i);
+			cJSON *problemId = cJSON_GetObjectItem(item, "id");
+			cJSON *problemTitle = cJSON_GetObjectItem(item, "title");
+			// problemText 값도 필요함. 뿐만 아니라 파일을 올렸다면 파일을 다운로드 할 수 있는 url 도 필요함.
+			// ejs-be 에서 getProblem() 을 없애고 getProblems() 를 알맞게 수정해야함.
+
+			printf("%-10d %-10s\n", problemId->valueint, problemTitle->valuestring);
+		}
+	} else {
+		printf("Failed to request...\n");
+		return 0;
+	}
 
 	return totalSize;
 }
@@ -293,6 +324,56 @@ int postResultHTTP(int repoId, int hiddenCaseId) {
 
 // - - - - submit 관련 - - - -
 
+// - - - - problem 관련 - - - -
+
+// 현재 repo 에 등록되어있는 problem 정보들을 출력합니다.
+void showAllProblemsHTTP(char* user_host) {
+
+	option = 0;
+	char url[URLSIZE];
+	char buf[512];
+	int repoId;
+	sprintf(buf, "Cookie: %s", session.data);
+
+	CURL *curl;
+	CURLcode response;
+	struct curl_list *list = NULL;
+	long stat;
+
+	printf("\n\nPlease check your repoId before using this command!!\n");
+	printf("Enter repoId of your repository to see its information: ");
+	scanf("%d", &repoId);
+
+	memset(url, 0, URLSIZE);
+	sprintf(url, "%s/problem/repo/%d", user_host, repoId);
+
+	curl = curl_easy_init();
+
+	if (curl) {
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
+
+		list = curl_slist_append(list, "Accept: */*");
+		list = curl_slist_append(list, "Content-Type: application/json");
+		list = curl_slist_append(list, buf);
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, NULL);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, problemResponse);
+
+		response = curl_easy_perform(curl);
+
+		if (response != CURLE_OK)
+			return ;
+
+		curl_easy_cleanup(curl);
+	} else {
+		fprintf(stderr, "Error on curl...\n");
+		return ;
+	}
+}
+// - - - - problem 관련 - - - - 
 
 // - - - - repo 관련 - - - -
 

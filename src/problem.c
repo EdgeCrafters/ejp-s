@@ -6,8 +6,18 @@
  * related with problem module
 */
 
-// 모든 문제들을 가져옵니다.
+// 필요한 옵션
+// h: host 주소
 static int show(int argc, char*argv[]) {
+    char* user_host = (char*) malloc(128 * sizeof(char));
+    if (argc == 5 && strcmp(argv[3], "h") == 0) {
+        user_host = argv[4];
+        userLogin(user_host);
+        showAllProblems(user_host);
+    } else {
+        printf("Please see the command description typing \"%s %s\"\n", argv[0], argv[1]);
+        exit(EXIT_FAILURE);
+    }
     return 1;
 }
 

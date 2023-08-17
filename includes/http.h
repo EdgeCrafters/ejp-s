@@ -19,6 +19,7 @@ int getBiasHTTP(int repoId, int hiddenCaseId);
 int postResultHTTP(repoId, hiddenCaseId);
 int getAllReposHTTP(char* user_host);
 void showAllReposHTTP(char* user_host);
+void showAllProblemsHTTP(char* user_host);
 int getRepoIdHTTP();
 int getHiddenCaseIdHTTP();
 void getSessionInfoHTTP();

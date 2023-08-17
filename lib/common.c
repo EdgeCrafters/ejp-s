@@ -83,6 +83,11 @@ void showAllRepos(char* user_host) {
 	return showAllReposHTTP(user_host);
 }
 
+// http.c 에 있는 showAllProblemsHTTP() 를 호출합니다.
+void showAllProblems(char* user_host) {
+	return showAllProblemsHTTP(user_host);
+}
+
 // http.c 에 있는 getRepoIdHTTP() 를 호출합니다.
 int getRepoId() {
 	// TODO

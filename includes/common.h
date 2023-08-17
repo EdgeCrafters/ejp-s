@@ -34,6 +34,7 @@ int getBias(int repoId, int hiddenCaseId);
 int postResult(int repoId, int hiddenCaseId);
 int getAllRepos(char* user_host);
 void showAllRepos(char* user_host);
+void showAllProblems(char* user_host);
 int getRepoId();
 int getHiddenCaseId();
 void getSessionInfo();
