@@ -1,8 +1,3 @@
-cmake_minimum_required(VERSION 3.11)
-
-include_directories(../lib)
-
-add_executable(ejs-s main.c repo.c workbook.c problem.c testcase.c)
-
-target_link_libraries( ejs-s PRIVATE parse sha256 diff http info cJSON common test)
-target_compile_options( ejs-s PUBLIC -w)
+add_executable(ejs-s main.c repo.c problem.c testcase.c)
+target_link_libraries( ejs-s parse sha256 http info cJSON common test)
+target_include_directories(ejs-s PRIVATE ${CMAKE_SOURCE_DIR}/include)
