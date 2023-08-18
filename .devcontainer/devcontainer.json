@@ -1,0 +1,14 @@
+{
+    "name": "skku-ejs-s",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspace",
+    "postCreateCommand":"chmod +x /workspace/scripts/setup.sh && ./scripts/setup.sh",
+    "extensions": [
+      "rangav.vscode-thunder-client",
+      "ms-vscode.cpptools-extension-pack",
+      "ms-vscode.cpptools",
+      "twxs.cmake",
+      "ms-vscode.cmake-tools"
+    ]
+}

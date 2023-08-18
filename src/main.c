@@ -1,4 +1,4 @@
-#include "../includes/common.h"
+#include "common.h"
 
 // int repo(int argc, char*argv[]);
 // int workbook(int argc, char*argv[]);

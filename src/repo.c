@@ -1,4 +1,4 @@
-#include "../includes/common.h"
+#include "../include/common.h"
 #include <stdio.h>
 
 static int result(int argc, char*argv[])
