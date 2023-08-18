@@ -1,27 +1,25 @@
-#include "../include/common.h"
-#include <stdio.h>
+#include "common.h"
 
-static int result(int argc, char*argv[])
-{
-	printf("result : ");
+char exe[PATHSIZE];
+char homeCache[PATHSIZE];
+
+static int show(int argc, char*argv[]) {
+	char home[VALUESIZE];
+	char *values[] = {home};
+	char *cache[] = {homeCache, NULL, NULL};
+
+	fprintf(stderr, "show : \n");
+	if (parseOpt(argc, argv, "h:", 1, values, cache) < 1) {
+		fprintf(stderr, "Please check options\n");
+		exit(EXIT_FAILURE);
+	}
+
+	userLogin(home);
+	userLogout(home);
 	return 0;
 }
 
-static int info(int argc, char*argv[])
-{
-	printf("info : ");
-	return 0;
-}
-
-static int upload(int argc, char*argv[])
-{
-	printf("upload : ");
-	return 0;
-}
-
-static int init(int argc, char*argv[])
-{
-	printf("init : ");
+static int get(int argc, char*argv[]) {
 	return 0;
 }
 
@@ -34,31 +32,29 @@ int repo(int argc, char*argv[])
 		exit(-1);
 	}
 
-	if(!strncmp(command,"init",4)){
-		if(init(argc-2,argv+2)<0){
-			fprintf(stderr,"error...");
+	if (getExecutablePath(exe) < 0) {
+		fprintf(stderr, "Cannot configure current path.\n");
+		exit(-1);
+	} else {
+		sprintf(homeCache, "%s/../.ejs/cache/home.txt", exe);
+		fprintf(stderr, "home: %s\n", homeCache);
+	}
+
+	if (!strncmp(command, "show", 4)) {
+		if (show(argc, argv)) {
+			fprintf(stderr, "Error\n");
 			exit(-1);
 		}
-	}else if(!strncmp(command,"upload",6)){
-		if(upload(argc-2,argv+2)<0){
-			fprintf(stderr,"error...");
+	} else if (!strncmp(command, "get", 3)) {
+		if (get(argc, argv)) {
+			fprintf(stderr, "Error\n");
 			exit(-1);
 		}
-	}else if(!strncmp(command,"info",4)){
-		if(info(argc-2,argv+2)<0){
-			fprintf(stderr,"unknown error...");
-			exit(-1);
-		}
-	}else if(!strncmp(command,"result",6)){
-		if(result(argc-2,argv+2)<0){
-			fprintf(stderr,"error...");
-			exit(-1);
-		}
-	}else{
-		fprintf(stderr,"unkown command...\n");
-		repoInfo();
+	} else {
+		fprintf(stderr, "Please check the command.\n");
 		exit(-1);
 	}
+
 	return 0;
 }
 
