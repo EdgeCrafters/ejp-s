@@ -11,6 +11,8 @@
 #include <errno.h>
 #include <libgen.h>
 
+#include <cJSON.h>
+
 #define STRSIZE 1048576
 
 #define BUFSIZE 512

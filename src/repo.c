@@ -3,6 +3,9 @@
 char exe[PATHSIZE];
 char homeCache[PATHSIZE];
 
+int showRepos(char home[]);
+int getRepos(char home[]);
+
 static int show(int argc, char*argv[]) {
 	char home[VALUESIZE];
 	char *values[] = {home};
@@ -15,6 +18,7 @@ static int show(int argc, char*argv[]) {
 	}
 
 	userLogin(home);
+	showRepos(home);
 	userLogout(home);
 	return 0;
 }
