@@ -168,7 +168,7 @@ int initRepo(const char home[], const char repoID[], char buffer[], size_t bufSi
 	return 0;
 }
 
-static int reposResponse(void *data, size_t size, size_t nmemb, void *clientp) {
+static size_t reposResponse(void *data, size_t size, size_t nmemb, void *clientp) {
 	cJSON *response = cJSON_Parse((const char*) data);
 
 	if (response) {
@@ -180,7 +180,7 @@ static int reposResponse(void *data, size_t size, size_t nmemb, void *clientp) {
 			printf("%-20s %-20s\n", "repositoryId", "repositoryName");
 
 			for (int i=0; i<numItems; i++) {
-				cJSON *item = cJSON_GetObjectItem(contentsArray, i);
+				cJSON *item = cJSON_GetArrayItem(contentsArray, i);
 
 				if (item) {
 					cJSON *repoId = cJSON_GetObjectItem(item, "repoId");
@@ -197,6 +197,8 @@ static int reposResponse(void *data, size_t size, size_t nmemb, void *clientp) {
 	} else {
 		return -1;
 	}
+
+	return size * nmemb;
 }
 
 int showReposHTTP(const char home[]) {
@@ -216,13 +218,12 @@ int showReposHTTP(const char home[]) {
 
 	if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url);
-        curl_easy_setopt(curl, CURLOPT_PORT, 4000L);
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
 
-        curl_easy_setopt(curl, CURLOPT_POST, 1L);
-        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
-
-        list = curl_slist_append(list, cookie);
+		list = curl_slist_append(list, "Accept: */*");
         list = curl_slist_append(list, "Content-Type: application/json");
+		list = curl_slist_append(list, cookie);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
 
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
@@ -233,15 +234,8 @@ int showReposHTTP(const char home[]) {
 			return -1;
 		}
 
-		curl_easy_getinfo(curl, CURLINFO_HTTP_CODE, &stat);
-		if (stat != 201) {
-			fprintf(stderr, "Error on request. (message: %s)\n", response);
-			return -1;
-		}
-
 		curl_easy_cleanup(curl);
 	} else {
-		fprintf(stderr, "Error on curl.\n");
 		return -1;
 	}
 
