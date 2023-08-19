@@ -11,7 +11,6 @@ static int show(int argc, char*argv[]) {
 	char *values[] = {home};
 	char *cache[] = {homeCache, NULL, NULL};
 
-	fprintf(stderr, "show : \n");
 	if (parseOpt(argc, argv, "h:", 1, values, cache) < 1) {
 		fprintf(stderr, "Please check options\n");
 		exit(EXIT_FAILURE);
@@ -24,6 +23,18 @@ static int show(int argc, char*argv[]) {
 }
 
 static int get(int argc, char*argv[]) {
+	char home[VALUESIZE];
+	char *values[] = {home};
+	char *cache[] = {homeCache, NULL, NULL};
+
+	if (parseOpt(argc, argv, "h:", 1, values, cache) < 1) {
+		fprintf(stderr, "Please check options\n");
+		exit(EXIT_FAILURE);
+	}
+
+	userLogin(home);
+	getRepos(home);
+	userLogout(home);
 	return 0;
 }
 
