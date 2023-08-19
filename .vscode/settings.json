@@ -2,6 +2,7 @@
     "files.associations": {
         "common.h": "c",
         "fcntl.h": "c",
-        "sha256.h": "c"
+        "sha256.h": "c",
+        "http.h": "c"
     }
 }

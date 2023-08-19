@@ -15,6 +15,7 @@ void repoInfo(void)
 	printf("repo command : \n");
 	printf(" 1. show: This command shows repositories you can access. This command requires \"-h\" option that means host address.\n\n");
 	printf(" 2. get: This command fetches all repositories information that you can access. This command requires \"-h\" option that means host address.\n\n");
+	printf(" 3. clean: This command delete all repositories information. It is recommended to use before using get command.\n\n");
 }
 
 void problemInfo(void)

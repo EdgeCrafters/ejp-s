@@ -2,6 +2,8 @@
 
 struct cookie session = {.isStore = 0};
 unsigned int writeidx;
+unsigned int repoIds[1000];
+unsigned int cnt;
 
 static size_t plainWrite(void *data, size_t size, size_t nmemb, void *clientp)
 {
@@ -169,6 +171,7 @@ int initRepo(const char home[], const char repoID[], char buffer[], size_t bufSi
 }
 
 static size_t showReposResponse(void *data, size_t size, size_t nmemb, void *clientp) {
+	cnt = 0;
 	cJSON *response = cJSON_Parse((const char*) data);
 
 	if (response) {
@@ -185,6 +188,7 @@ static size_t showReposResponse(void *data, size_t size, size_t nmemb, void *cli
 				if (item) {
 					cJSON *repoId = cJSON_GetObjectItem(item, "repoId");
 					cJSON *repoName = cJSON_GetObjectItem(item, "repoName");
+					repoIds[cnt++] = repoId->valueint;
 
 					if (repoId && repoName) {
 						printf("%-20d %-20s\n", repoId->valueint, repoName->valuestring);
@@ -209,7 +213,6 @@ static size_t getReposResponse(void *data, size_t size, size_t nmemb, void *clie
 	if (response) {
 		if (stat(dir_name, &dir_info) == 0) {
 			if (S_ISDIR(dir_info.st_mode)) {
-				// deleteAllFile(dir_name);
 				makeReposJsonFile(response, dir_name);
 			} else {
 				fprintf(stderr, "Path exist, but it's not a directory.\n");
@@ -315,16 +318,12 @@ int showReposHTTP(const char home[]) {
 	return 0;
 }
 
-int getReposHTTP(const char home[]) {
+int getReposHTTP(const char home[], int repoId) {
 	char url[URLSIZE], cookie[BUFSIZE], response[BUFSIZE];
 	CURL *curl;
 	CURLcode res;
 	struct curl_slist *list = NULL;
 	long stat;
-	int repoId;
-
-	fprintf(stderr, "Please enter one of repositoryId above : ");
-	scanf("%d", &repoId);
 
 	memset(url, 0, URLSIZE);
 	sprintf(url, "%s/repos/%d", home, repoId);
@@ -357,5 +356,14 @@ int getReposHTTP(const char home[]) {
 		return -1;
 	}
 
+	return 0;
+}
+
+int getReposManager(const char home[]) {
+	for (int i=0; i<cnt; i++) {
+		if (getReposHTTP(home, repoIds[i]) < 0) {
+			return -1;
+		}
+	}
 	return 0;
 }

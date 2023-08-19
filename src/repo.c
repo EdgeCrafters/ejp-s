@@ -5,6 +5,7 @@ char homeCache[PATHSIZE];
 
 int showRepos(char home[]);
 int getRepos(char home[]);
+int cleanRepos();
 
 static int show(int argc, char*argv[]) {
 	char home[VALUESIZE];
@@ -38,6 +39,11 @@ static int get(int argc, char*argv[]) {
 	return 0;
 }
 
+static int clean(int argc, char*argv[]) {
+	cleanRepos();
+	return 0;
+}
+
 int repo(int argc, char*argv[])
 {
 	char command[CMDSIZE];
@@ -62,6 +68,11 @@ int repo(int argc, char*argv[])
 		}
 	} else if (!strncmp(command, "get", 3)) {
 		if (get(argc, argv)) {
+			fprintf(stderr, "Error\n");
+			exit(-1);
+		}
+	} else if (!strncmp(command, "clean", 5)) {
+		if (clean(argc, argv)) {
 			fprintf(stderr, "Error\n");
 			exit(-1);
 		}

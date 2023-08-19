@@ -1,7 +1,7 @@
 #include "http.h"
 #include "common.h"
 
-int showRepos(char home[]) {
+int showRepos(char home[], int option) {
     if (showReposHTTP(home) < 0) {
         fprintf(stderr, "Fail to receive repo informations.\n");
         exit(EXIT_FAILURE);
@@ -16,10 +16,15 @@ int getRepos(char home[]) {
         exit(EXIT_FAILURE);
     }
 
-    if (getReposHTTP(home) < 0) {
+    if (getReposManager(home) < 0) {
         fprintf(stderr, "Fail to get repo informations.\n");
         exit(EXIT_FAILURE);
     }
 
+    return 0;
+}
+
+int cleanRepos() {
+    deleteAllFile("../myRepos");
     return 0;
 }
