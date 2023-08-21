@@ -1,14 +1,14 @@
-#include "../include/common.h" 
-#include "../include/cJSON.h"
-/**
- * related with problem module
-*/
+#include "common.h" 
+#include "cJSON.h"
+
+int showProblems();
+int testProblem();
+int submitResult(char home[]);
 
 static int show(int argc, char*argv[]) {
-    return 0;
-}
-
-static int get(int argc, char*argv[]) {
+    if (showProblems() < 0) {
+        return -1;
+    }
     return 0;
 }
 
@@ -80,23 +80,14 @@ int problem(int argc, char*argv[]) {
             fprintf(stderr, "ERROR\n");
             exit(-1);
         }
-    } else if (!strncmp(command, "get", 3)) {
-        // TODO
-        printf("get!\n");
-        if (get(argc, argv)) {
-            fprintf(stderr, "ERROR\n");
-            exit(-1);
-        }
     } else if (!strncmp(command, "submit", 6)) {
         // TODO
         printf("submit!\n");
-        if (submit(argc, argv)) {
-            fprintf(stderr, "ERROR\n");
-            exit(-1);
-        }
     } else if (!strncmp(command, "test", 4)) {
         // TODO
         printf("test!\n");
-        test(argc, argv);
+    } else {
+        fprintf(stderr, "Please check command.\n");
+        exit(-1);
     }
 }
