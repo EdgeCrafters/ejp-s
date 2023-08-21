@@ -10,6 +10,7 @@
 #include <dirent.h>
 #include <errno.h>
 #include <libgen.h>
+#include <ctype.h>
 
 #include <cJSON.h>
 

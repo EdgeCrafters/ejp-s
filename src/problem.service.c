@@ -1,7 +1,40 @@
 #include "http.h"
 #include "common.h"
 
+cJSON* getProblems(char* dir_path, int repoId);
+
 int showProblems() {
+    const char* dir_path = "../myRepos";
+    int repoId = 0, problemCount = 0;
+    cJSON* problems = NULL;
+
+    if (showRepoInfos(dir_path) < 0) {
+        return -1;
+    }
+
+    printf("\n\nPlease enter the ID of the repository: ");
+    scanf("%d", &repoId);
+
+    problems = getProblems(dir_path, repoId);
+    if (problems == NULL) {
+        return -1;
+    }
+
+    problemCount = cJSON_GetArraySize(problems);
+    printf("\n\nInformation of problems: \n");
+    for (int i=0; i<problemCount; i++) {
+        cJSON *item = cJSON_GetArrayItem(problems, i);
+        cJSON *problemId = cJSON_GetObjectItem(item, "id");
+        cJSON *problemTitle = cJSON_GetObjectItem(item, "title");
+        cJSON *problemText = cJSON_GetObjectItem(item, "text");
+        cJSON *problemUUID = cJSON_GetObjectItem(item, "uuid");
+
+        printf("Problem no.%d\n", i+1);
+        printf("id: %d\n", problemId->valueint);
+        printf("title: %s\n", problemTitle->valuestring);
+        printf("text: %s\n", problemText->valuestring);
+        printf("file link: %s\n\n", problemUUID->valuestring);
+    }
     return 0;
 }
 
@@ -11,4 +44,137 @@ int testProblem() {
 
 int submitResult(char home[]) {
     return 0;
+}
+
+int showRepoInfos(char* dir_path) {
+    DIR* dir;
+    struct dirent *entry;
+    
+    dir = opendir(dir_path);
+    if (dir == NULL) {
+        fprintf(stderr, "Fail to open directory.\n");
+        return -1;
+    }
+
+    printf("\n\nInformation of your repositories: \n");
+    printf("%-20s %-20s\n", "repositoryId", "repositoryName");
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_type == DT_REG) {
+            const char* file_name = entry->d_name;
+            size_t file_name_len = strlen(file_name);
+
+            if (file_name_len > 5 && strcmp(file_name + file_name_len - 5, ".json") == 0) {
+                char file_path[256];
+                snprintf(file_path, sizeof(file_path), "%s/%s", dir_path, file_name);
+
+                FILE* file = fopen(file_path, "r");
+                if (!file) {
+                    return -1;
+                }
+
+                fseek(file, 0, SEEK_END);
+                long file_size = ftell(file);
+                fseek(file, 0, SEEK_SET);
+
+                char* json_data = (char*) malloc(file_size + 1);
+                if (!json_data) {
+                    fclose(file);
+                    return -1;
+                }
+
+                fread(json_data, 1, file_size, file);
+                fclose(file);
+                json_data[file_size] = '\0';
+
+                cJSON* root = cJSON_Parse(json_data);
+                if (!root) {
+                    free(json_data);
+                    return -1;
+                }
+                cJSON* repoId = cJSON_GetObjectItem(root, "id");
+                cJSON* repoName = cJSON_GetObjectItem(root, "name");
+
+                if (repoId != NULL && repoName != NULL) {
+                    printf("%-20d %-20s\n", repoId->valueint, repoName->valuestring);
+                } else {
+                    fprintf(stderr, "It seems like JSON file is corrupted. Please fetch the repository information again.\n");
+                    return -1;
+                }
+            }
+        }
+    }
+
+    return 0;
+}
+
+cJSON* getProblems(char* dir_path, int repoId) {
+    DIR* dir;
+    struct dirent *entry;
+    cJSON* problems = NULL;
+    char numeric_part[20];
+    char strRepoId[20];
+    snprintf(strRepoId, sizeof(strRepoId), "%d", repoId);
+    
+    dir = opendir(dir_path);
+    dir = opendir(dir_path);
+    if (dir == NULL) {
+        fprintf(stderr, "Fail to open directory.\n");
+        return -1;
+    }
+
+    while ((entry = readdir(dir)) != NULL) {
+        if (entry->d_type == DT_REG) {
+            const char* file_name = entry->d_name;
+            size_t file_name_len = strlen(file_name);
+
+            if (file_name_len > 5 && strcmp(file_name + file_name_len - 5, ".json") == 0) {
+                int i = 0;
+                while (file_name[i] != '\0' && file_name[i] != '_') {
+                    if (isdigit(file_name[i])) {
+                        numeric_part[i] = file_name[i];
+                        i++;
+                    } else {
+                        break;
+                    }
+                }
+                numeric_part[i] = 0;
+
+                if (strcmp(numeric_part, strRepoId) == 0) {
+                    char file_path[256];
+                    snprintf(file_path, sizeof(file_path), "%s/%s", dir_path, file_name);
+
+                    FILE* file = fopen(file_path, "r");
+                    if (!file) {
+                        return -1;
+                    }
+
+                    fseek(file, 0, SEEK_END);
+                    long file_size = ftell(file);
+                    fseek(file, 0, SEEK_SET);
+
+                    char* json_data = (char*) malloc(file_size + 1);
+                    if (!json_data) {
+                        fclose(file);
+                        return -1;
+                    }
+
+                    fread(json_data, 1, file_size, file);
+                    fclose(file);
+                    json_data[file_size] = '\0';
+
+                    cJSON* root = cJSON_Parse(json_data);
+                    if (!root) {
+                        free(json_data);
+                        return -1;
+                    }
+
+                    problems = cJSON_GetObjectItem(root, "Problem");
+                } else {
+                    continue;
+                }
+            }
+        }
+    }
+
+    return problems;
 }
