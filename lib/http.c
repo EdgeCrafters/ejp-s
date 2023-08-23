@@ -384,6 +384,7 @@ int getReposManager(const char home[]) {
 
 int submitResultHTTP(const char home[], const char* output, int testcaseId) {
 	char url[URLSIZE], cookie[BUFSIZE], response[BUFSIZE], payload[STRSIZE];
+	char *buf = (char*) malloc(512*sizeof(char));
 	CURL *curl;
 	CURLcode res;
 	struct curl_slist *list = NULL;
@@ -411,8 +412,10 @@ int submitResultHTTP(const char home[], const char* output, int testcaseId) {
         while (output_length > 0 && (output[output_length - 1] == ' ' || output[output_length - 1] == '\t' || output[output_length - 1] == '\n' || output[output_length - 1] == '\r')) {
             output_length--;
         }
+		sprintf(buf, "%.*s", output_length, output);
+		buf = SHA256(buf);
 
-		sprintf(payload, "{\"hashedOutput\": \"%.*s\"}", output_length, output);
+		sprintf(payload, "{\"hashedOutput\": \"%s\"}", buf);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload);
 		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(payload));
 

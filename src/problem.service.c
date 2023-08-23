@@ -1,23 +1,22 @@
 #include "http.h"
-#include "common.h"
 
 cJSON* getProblems(char* dir_path, int repoId);
 cJSON* getTestCases(cJSON* problems, int problemId);
 cJSON* getTestCase(cJSON* testcases, int testcaseId);
 
 int showProblems() {
-    const char* dir_path = "../myRepos";
+    const char* repo_path = "../myRepos";
     int repoId = 0, problemCount = 0;
     cJSON* problems = NULL;
 
-    if (showRepoInfos(dir_path) < 0) {
+    if (showRepoInfos(repo_path) < 0) {
         return -1;
     }
 
     printf("\n\nPlease enter the ID of the repository: ");
     scanf("%d", &repoId);
 
-    problems = getProblems(dir_path, repoId);
+    problems = getProblems(repo_path, repoId);
     if (problems == NULL) {
         return -1;
     }
@@ -25,30 +24,61 @@ int showProblems() {
     problemCount = cJSON_GetArraySize(problems);
     printf("\n\nInformation of problems: \n");
     for (int i=0; i<problemCount; i++) {
-        cJSON *item = cJSON_GetArrayItem(problems, i);
-        cJSON *problemId = cJSON_GetObjectItem(item, "id");
-        cJSON *problemTitle = cJSON_GetObjectItem(item, "title");
-        cJSON *problemText = cJSON_GetObjectItem(item, "text");
-        cJSON *problemUUID = cJSON_GetObjectItem(item, "uuid");
-
-        printf("------------------------------\n");
-        printf("Problem no.%d\n", i+1);
-        printf("id: %d\n", problemId->valueint);
-        printf("title: %s\n", problemTitle->valuestring);
-        printf("text: %s\n", problemText->valuestring);
-        printf("file link: %s\n", problemUUID->valuestring);
-        printf("------------------------------\n\n");
+        printProblemInfo(problems, i);
     }
     return 0;
 }
 
-int testProblem() {
+int testProblem(char location[]) {
+    char* user_output = (char*) malloc(512*sizeof(char));
+    int testcaseId = 0;
+    cJSON *testcases = NULL;
+    cJSON *testcase = NULL;
+
+    if (showTestcases(&testcases) < 0) {
+        return -1;
+    }
+
+    printf("\n\nPlease enter the ID of the testcase: ");
+    scanf("%d", &testcaseId);
+
+    testcase = getTestCase(testcases, testcaseId);
+    if (testcase == NULL) {
+        fprintf(stderr, "Please check the testcaseID\n");
+        return -1;
+    }
+
+    cJSON *input = cJSON_GetObjectItem(testcase, "input");
+    cJSON *output = cJSON_GetObjectItem(testcase, "output");
+
+    execute(location, input->valuestring, user_output);
+
+    size_t output_length = strlen(user_output);
+    while (output_length > 0 && 
+        (user_output[output_length - 1] == ' ' 
+        || user_output[output_length - 1] == '\t' 
+        || user_output[output_length - 1] == '\n' 
+        || user_output[output_length - 1] == '\r'
+    )) {
+        output_length--;
+    }
+
+    sprintf(user_output, "%.*s", output_length, user_output);
+    user_output = SHA256(user_output);
+
+    if (!strcmp(user_output, output->valuestring)) {
+        printf("PASS\n");
+    } else {
+        printf("FAILED\n");
+    }
+
+    free(user_output);
     return 0;
 }
 
 int submitResult(char home[], char location[]) {
     const char* repo_path = "../myRepos";
-    char* output = (char*) malloc(128*sizeof(char));
+    char* output = (char*) malloc(512*sizeof(char));
     int testcaseId = 0;
     cJSON *testcases = NULL;
     cJSON *testcase = NULL;
@@ -69,12 +99,11 @@ int submitResult(char home[], char location[]) {
     cJSON *input = cJSON_GetObjectItem(testcase, "input");
 
     execute(location, input->valuestring, output);
-    // output 을 SHA256 암호화해야함.
-    // 나중에 한번에 하기
 
     if (submitResultHTTP(home, output, testcaseId) < 0) {
         return -1;
     }
+    free(output);
     return 0;
 }
 

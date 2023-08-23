@@ -1,5 +1,4 @@
 #include "http.h"
-#include "common.h"
 
 int showRepos(char home[]) {
     if (showReposHTTP(home) < 0) {

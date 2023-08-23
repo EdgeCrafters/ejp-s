@@ -1,8 +1,7 @@
 #include "common.h" 
-#include "cJSON.h"
 
 int showProblems();
-int testProblem();
+int testProblem(char location[]);
 int submitResult(char home[], char location[]);
 int showTestcases(cJSON** testcasesPtr);
 
@@ -20,7 +19,7 @@ static int submit(int argc, char*argv[]) {
     char *cache[] = {homeCache, NULL, NULL};
 
     if (parseOpt(argc, argv, "h:l:", 2, values, cache) < 2) {
-        fprintf(stderr, "Please check options\n");
+        fprintf(stderr, "Please check options.\n");
         exit(EXIT_FAILURE);
     }
 
@@ -34,7 +33,19 @@ static int submit(int argc, char*argv[]) {
     return 0;
 }
 
-static int test() {
+static int test(int argc, char*argv[]) {
+    char location[VALUESIZE];
+    char *values[] = {location};
+    char *cache[] = {NULL};
+
+    if (parseOpt(argc, argv, "l:", 1, values, cache) < 1) {
+        fprintf(stderr, "Please check options.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (testProblem(location) < 0) {
+        return -1;
+    }
     return 0;
 }
 
@@ -72,8 +83,10 @@ int problem(int argc, char*argv[]) {
             exit(-1);
         }
     } else if (!strcmp(command, "test")) {
-        // TODO
-        printf("test!\n");
+        if (test(argc, argv)) {
+            fprintf(stderr, "ERROR\n");
+            exit(-1);
+        }
     } else if (!strcmp(command, "testcase")) {
         if (testcase()) {
             fprintf(stderr, "ERROR\n");

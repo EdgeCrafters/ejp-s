@@ -21,7 +21,7 @@
 #define URLSIZE 512
 #define PATHSIZE 512
 
-#define VALUESIZE 32
+#define VALUESIZE 512
 
 #define IDSIZE 16 
 #define PWSIZE 16 
