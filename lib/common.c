@@ -30,7 +30,7 @@ int parseOpt(int argc, char *argv[], const char targetOpt[], const int optNum,
             int cache;
             if ((cache = open(caches[i], O_WRONLY | O_CREAT | O_TRUNC, S_IRWXO | S_IRWXU)) < 0)
                 goto cacheException;
-            else if (write(cache, optArg[i], strlen(optArg)) < 0)
+            else if (write(cache, optArg[i], strlen(optArg[i])) < 0)
             {
                 close(cache);
                 goto cacheException;

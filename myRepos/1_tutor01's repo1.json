@@ -9,8 +9,8 @@
 			"repoId":	1,
 			"testCase":	[{
 					"id":	1,
-					"input":	"52431",
-					"output":	"12345",
+					"input":	"5 2 4 3 1",
+					"output":	"1 2 3 4 5",
 					"isHidden":	"OPENED",
 					"repoId":	1,
 					"problemId":	1
