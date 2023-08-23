@@ -24,4 +24,5 @@ void problemInfo(void)
 	printf(" 1. show: Read all questions written by your instructor. \n\n");
 	printf(" 2. submit: Submit your answer(maybe..?) code.\nThis command requires \"-h\" option that means host address and \"-l\" option that means location of your answer file.\n\n");
 	printf(" 3. test: Test your code with testcase published by your instructor. \n\n");
+	printf(" 4. testcase: Read all testcases.\n\n");
 }

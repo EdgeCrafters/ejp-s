@@ -2,7 +2,6 @@
 #include "common.h"
 
 cJSON* getProblems(char* dir_path, int repoId);
-// cJSON* getTestCases(char* dir_path, int repoId, int problemId);
 cJSON* getTestCases(cJSON* problems, int problemId);
 cJSON* getTestCase(cJSON* testcases, int testcaseId);
 
@@ -50,10 +49,40 @@ int testProblem() {
 int submitResult(char home[], char location[]) {
     const char* repo_path = "../myRepos";
     char* output = (char*) malloc(128*sizeof(char));
-    int repoId = 0, problemId = 0, testcaseId = 0, problemCount = 0, testCaseCount = 0;
-    cJSON *problems = NULL;
+    int testcaseId = 0;
     cJSON *testcases = NULL;
     cJSON *testcase = NULL;
+
+    if (showTestcases(&testcases) < 0) {
+        return -1;
+    }
+
+    printf("\n\nPlease enter the ID of the testcase: ");
+    scanf("%d", &testcaseId);
+
+    testcase = getTestCase(testcases, testcaseId);
+    if (testcase == NULL) {
+        fprintf(stderr, "Please check the testcaseID\n");
+        return -1;
+    }
+    
+    cJSON *input = cJSON_GetObjectItem(testcase, "input");
+
+    execute(location, input->valuestring, output);
+    // output 을 SHA256 암호화해야함.
+    // 나중에 한번에 하기
+
+    if (submitResultHTTP(home, output, testcaseId) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+int showTestcases(cJSON** testcasesPtr) {
+    const char* repo_path = "../myRepos";
+    int repoId = 0, problemId = 0, problemCount = 0, testCaseCount = 0;
+    cJSON *problems = NULL;
+    cJSON *testcases = NULL;
 
     if (showRepoInfos(repo_path) < 0) {
         return -1;
@@ -75,28 +104,18 @@ int submitResult(char home[], char location[]) {
 
     printf("\n\nInformation of problems: \n");
     for (int i=0; i<problemCount; i++) {
-        cJSON *item = cJSON_GetArrayItem(problems, i);
-        cJSON *id = cJSON_GetObjectItem(item, "id");
-        cJSON *title = cJSON_GetObjectItem(item, "title");
-        cJSON *text = cJSON_GetObjectItem(item, "text");
-        cJSON *uuid = cJSON_GetObjectItem(item, "uuid");
-
-        printf("------------------------------\n");
-        printf("Problem no.%d\n", i+1);
-        printf("id: %d\n", id->valueint);
-        printf("title: %s\n", title->valuestring);
-        printf("text: %s\n", text->valuestring);
-        printf("file link: %s\n", uuid->valuestring);
-        printf("------------------------------\n\n");
+        printProblemInfo(problems, i);
     }
 
     printf("\n\nPlease enter the ID of the problem: ");
     scanf("%d", &problemId);
 
-    // testcases = getTestCases(repo_path, repoId, problemId);
     testcases = getTestCases(problems, problemId);
     if (testcases == NULL) {
         return -1;
+    }
+    if (testcasesPtr != NULL) {
+        *testcasesPtr = testcases;
     }
 
     testCaseCount = cJSON_GetArraySize(testcases);
@@ -107,39 +126,9 @@ int submitResult(char home[], char location[]) {
 
     printf("\n\nInformation of testcase: \n");
     for (int i=0; i<testCaseCount; i++) {
-        cJSON *item = cJSON_GetArrayItem(testcases, i);
-        cJSON *id = cJSON_GetObjectItem(item, "id");
-        cJSON *input = cJSON_GetObjectItem(item, "input");
-        cJSON *output = cJSON_GetObjectItem(item, "output");
-        cJSON *isHidden = cJSON_GetObjectItem(item, "isHidden");
-
-        printf("------------------------------\n");
-        printf("TestCase no.%d\n", i+1);
-        printf("id: %d\n", id->valueint);
-        printf("input: %s\n", input->valuestring);
-        printf("output: %s\n", output->valuestring);
-        printf("isHidden: %s\n", isHidden->valuestring);
-        printf("------------------------------\n\n");
+        printTestcaseInfo(testcases, i);
     }
 
-    printf("\n\nPlease enter the ID of the testcase: ");
-    scanf("%d", &testcaseId);
-
-    testcase = getTestCase(testcases, testcaseId);
-    if (testcase == NULL) {
-        fprintf(stderr, "Please check the testcaseID\n");
-        return -1;
-    }
-    
-    cJSON *input = cJSON_GetObjectItem(testcase, "input");
-
-    execute(location, input->valuestring, output);
-    // output 을 SHA256 암호화해야함.
-    // 나중에 한번에 하기
-
-    if (submitResultHTTP(home, output, testcaseId) < 0) {
-        return -1;
-    }
     return 0;
 }
 
@@ -202,6 +191,40 @@ int showRepoInfos(char* dir_path) {
     }
 
     return 0;
+}
+
+void printProblemInfo(cJSON* problems, int index) {
+    cJSON *item = cJSON_GetArrayItem(problems, index);
+    cJSON *id = cJSON_GetObjectItem(item, "id");
+    cJSON *title = cJSON_GetObjectItem(item, "title");
+    cJSON *text = cJSON_GetObjectItem(item, "text");
+    cJSON *uuid = cJSON_GetObjectItem(item, "uuid");
+
+    printf("------------------------------\n");
+    printf("%-11s%d\n", "Problem no.", index+1);
+    printf("------------------------------\n");
+    printf("%-15s%d\n", "id: ", id->valueint);
+    printf("%-15s%s\n", "title: ", title->valuestring);
+    printf("%-15s%s\n", "text: : ", text->valuestring);
+    printf("%-15s%s\n", "file link: ", uuid->valuestring);
+    printf("------------------------------\n\n");
+}
+
+void printTestcaseInfo(cJSON* testcases, int index) {
+    cJSON *item = cJSON_GetArrayItem(testcases, index);
+    cJSON *id = cJSON_GetObjectItem(item, "id");
+    cJSON *input = cJSON_GetObjectItem(item, "input");
+    cJSON *output = cJSON_GetObjectItem(item, "output");
+    cJSON *isHidden = cJSON_GetObjectItem(item, "isHidden");
+
+    printf("------------------------------\n");
+    printf("%-12s%d\n", "TestCase no.", index+1);
+    printf("------------------------------\n");
+    printf("%-15s%d\n", "id: ", id->valueint);
+    printf("%-15s%s\n", "input: ", input->valuestring);
+    printf("%-15s%s\n", "output: ", output->valuestring);
+    printf("%-15s%s\n", "isHidden: ", isHidden->valuestring);
+    printf("------------------------------\n\n");
 }
 
 cJSON* getProblems(char* dir_path, int repoId) {
