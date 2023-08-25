@@ -169,32 +169,27 @@ static int showReposResponse(cJSON* response) {
 	return 0;
 }
 
-static size_t getReposResponse(void *data, size_t size, size_t nmemb, void *clientp) {
-	char *dir_name = "../myRepos";
+static int getReposResponse(cJSON* response) {
+	const char* repo_path = "../myRepos";
 	struct stat dir_info;
-	cJSON *response = cJSON_Parse((const char*) data);
 
-	if (response) {
-		if (stat(dir_name, &dir_info) == 0) {
-			if (S_ISDIR(dir_info.st_mode)) {
-				makeReposJsonFile(response, dir_name);
-			} else {
-				fprintf(stderr, "Path exist, but it's not a directory.\n");
-				return -1;
-			}
+	if (stat(repo_path, &dir_info) == 0) {
+		if (S_ISDIR(dir_info.st_mode)) {
+			makeReposJsonFile(response, repo_path);
 		} else {
-			if (mkdir(dir_name, 0755) == 0) {
-				makeReposJsonFile(response, dir_name);
-			} else {
-				fprintf(stderr, "Error on creating directory.\n");
-				return -1;
-			}
+			fprintf(stderr, "Path exist, but it's not a directory.\n");
+			return -1;
 		}
 	} else {
-		return -1;
+		if (mkdir(repo_path, 0755) == 0) {
+			makeReposJsonFile(response, repo_path);
+		} else {
+			fprintf(stderr, "Error on creating directory.\n");
+			return -1;
+		}
 	}
 
-	return size * nmemb;
+	return 0;
 }
 
 static size_t submitResultResponse(void *data, size_t size, size_t nmemb, void *clientp) {
@@ -256,7 +251,7 @@ void deleteAllFile(const char dir_name[]) {
 }
 
 int showReposHTTP(const char home[]) {
-	char url[URLSIZE], cookie[BUFSIZE], response[STRSIZE];
+	char url[URLSIZE], cookie[BUFSIZE], response[STRSIZE] = {'\0'};
 	CURL *curl;
 	CURLcode res;
 	struct curl_slist *list = NULL;
@@ -302,7 +297,7 @@ int showReposHTTP(const char home[]) {
 }
 
 int getReposHTTP(const char home[], int repoId) {
-	char url[URLSIZE], cookie[BUFSIZE], response[BUFSIZE];
+	char url[URLSIZE], cookie[BUFSIZE], response[STRSIZE] = {'\0'};
 	CURL *curl;
 	CURLcode res;
 	struct curl_slist *list = NULL;
@@ -326,11 +321,17 @@ int getReposHTTP(const char home[], int repoId) {
 		list = curl_slist_append(list, cookie);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
 
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, getReposResponse);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
 
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
+			return -1;
+		}
+
+		cJSON* json = cJSON_Parse(response);
+
+		if (getReposResponse(json) < 0) {
 			return -1;
 		}
 
