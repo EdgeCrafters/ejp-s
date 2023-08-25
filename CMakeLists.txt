@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.11)
-project(EJS-S)
+project(EJP-S)
 
 include(FetchContent)
 

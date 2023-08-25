@@ -68,7 +68,7 @@ int problem(int argc, char*argv[]) {
 		fprintf(stderr, "Cannot configure current path.\n");
 		exit(-1);
 	} else {
-		sprintf(homeCache, "%s/../.ejs/cache/home.txt", exe);
+		sprintf(homeCache, "%s/../.ejp/cache/home.txt", exe);
 		fprintf(stderr, "home: %s\n", homeCache);
 	}
 
