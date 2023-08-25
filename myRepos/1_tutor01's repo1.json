@@ -9,15 +9,8 @@
 			"repoId":	1,
 			"testCase":	[{
 					"id":	1,
-					"input":	"adfadsf",
-					"output":	"asdfasdf",
-					"isHidden":	"OPENED",
-					"repoId":	1,
-					"problemId":	1
-				}, {
-					"id":	2,
-					"input":	"aaaa",
-					"output":	"bbbb",
+					"input":	"5 2 4 3 1",
+					"output":	"2deb4db564eb7bf637bbcd3cf2d964639e63825caaa233dd8d759708b272dd55",
 					"isHidden":	"OPENED",
 					"repoId":	1,
 					"problemId":	1

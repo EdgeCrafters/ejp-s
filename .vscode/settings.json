@@ -3,6 +3,8 @@
         "common.h": "c",
         "fcntl.h": "c",
         "sha256.h": "c",
-        "http.h": "c"
+        "http.h": "c",
+        "stddef.h": "c",
+        "cjson.h": "c"
     }
 }

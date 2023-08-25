@@ -179,8 +179,8 @@ static size_t showReposResponse(void *data, size_t size, size_t nmemb, void *cli
 
 		if (contentsArray) {
 			int numItems = cJSON_GetArraySize(contentsArray);
-			printf("\n\nInformation of your repositories: \n");
-			printf("%-20s %-20s\n", "repositoryId", "repositoryName");
+			fprintf(stderr, "\n\nInformation of your repositories: \n");
+			fprintf(stderr, "%-20s %-20s\n", "repositoryId", "repositoryName");
 
 			for (int i=0; i<numItems; i++) {
 				cJSON *item = cJSON_GetArrayItem(contentsArray, i);
@@ -191,7 +191,7 @@ static size_t showReposResponse(void *data, size_t size, size_t nmemb, void *cli
 					repoIds[cnt++] = repoId->valueint;
 
 					if (repoId && repoName) {
-						printf("%-20d %-20s\n", repoId->valueint, repoName->valuestring);
+						fprintf(stderr, "%-20d %-20s\n", repoId->valueint, repoName->valuestring);
 					}
 				}
 			}
@@ -227,6 +227,20 @@ static size_t getReposResponse(void *data, size_t size, size_t nmemb, void *clie
 			}
 		}
 	} else {
+		return -1;
+	}
+
+	return size * nmemb;
+}
+
+static size_t submitResultResponse(void *data, size_t size, size_t nmemb, void *clientp) {
+	cJSON *response = cJSON_Parse((const char*) data);
+
+	if (response) {
+		cJSON *message = cJSON_GetObjectItem(response, "message");
+		fprintf(stderr, "%s\n", message->valuestring);
+	} else {
+		fprintf(stderr, "Fail to request.\n");
 		return -1;
 	}
 
@@ -367,3 +381,57 @@ int getReposManager(const char home[]) {
 	}
 	return 0;
 }
+
+int submitResultHTTP(const char home[], const char* output, int testcaseId) {
+	char url[URLSIZE], cookie[BUFSIZE], response[BUFSIZE], payload[STRSIZE];
+	char *buf = (char*) malloc(512*sizeof(char));
+	CURL *curl;
+	CURLcode res;
+	struct curl_slist *list = NULL;
+	long stat;
+
+	memset(url, 0, URLSIZE);
+	sprintf(url, "%s/testcase/%d", home, testcaseId);
+
+	memset(cookie, 0, BUFSIZE);
+	sprintf(cookie, "Cookie: %s", session.data);
+
+	curl = curl_easy_init();
+
+	if (curl) {
+		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
+		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
+
+		list = curl_slist_append(list, "Accept: */*");
+        list = curl_slist_append(list, "Content-Type: application/json");
+		list = curl_slist_append(list, cookie);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+
+        size_t output_length = strlen(output);
+        while (output_length > 0 && (output[output_length - 1] == ' ' || output[output_length - 1] == '\t' || output[output_length - 1] == '\n' || output[output_length - 1] == '\r')) {
+            output_length--;
+        }
+		sprintf(buf, "%.*s", output_length, output);
+		buf = SHA256(buf);
+
+		sprintf(payload, "{\"hashedOutput\": \"%s\"}", buf);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, payload);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, strlen(payload));
+
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, submitResultResponse);
+
+		res = curl_easy_perform(curl);
+		if (res != CURLE_OK) {
+			return -1;
+		}
+
+		curl_easy_cleanup(curl);
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
+
