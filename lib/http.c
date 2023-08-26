@@ -2,8 +2,9 @@
 
 struct cookie session = {.isStore = 0};
 unsigned int writeidx;
-unsigned int repoIds[1000];
-unsigned int cnt;
+unsigned int repoIds[10000];
+unsigned int cnt = 0;
+
 
 static size_t plainWrite(void *data, size_t size, size_t nmemb, void *clientp)
 {
@@ -12,6 +13,15 @@ static size_t plainWrite(void *data, size_t size, size_t nmemb, void *clientp)
         strncpy((char *)clientp + writeidx, (char *)data, nmemb);
         writeidx += nmemb;
     }
+    return size * nmemb;
+}
+
+static size_t writeCallback(void *data, size_t size, size_t nmemb, void *clientp) {
+    char *response = (char *)clientp;
+
+    // 현재 응답 데이터를 response에 연결
+    strcat(response, (char *)data);
+
     return size * nmemb;
 }
 
@@ -44,8 +54,8 @@ int login(const char home[], const char id[], const char pw[])
 	if(curl){
 		curl_easy_setopt(curl, CURLOPT_URL, url);
 		
-		curl_easy_setopt(curl, CURLOPT_POST, 1L);
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
+        curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
 
 		list = curl_slist_append(list,"Accept: */*");
 		list = curl_slist_append(list,"Content-Type: application/json");
@@ -122,115 +132,64 @@ int logout(const char home[])
 	return 0;
 }
 
-int initRepo(const char home[], const char repoID[], char buffer[], size_t bufSize)
-{
-	char url[URLSIZE],cookie[BUFSIZE];
-	CURL *curl;
-	CURLcode res;
-	struct curl_slist *list = NULL;
-	long stat;
+static int showReposResponse(cJSON* response) {
+	cnt = 0;
+	cJSON* message = cJSON_GetObjectItem(response, "message");
 
-	memset(url,0,URLSIZE);
-	sprintf(url,"%s/repos/%s",home,repoID);
+	if (!strcmp(message->valuestring, "success")) {
+		cJSON* content = cJSON_GetObjectItem(response, "content");
+		int size = cJSON_GetArraySize(content);
 
-	memset(cookie,0,BUFSIZE);
-	sprintf(cookie,"Cookie: %s",session.data);
+		if (content && size > 0) {
+			fprintf(stderr, "\n\nInformation of your repositories: \n");
+			fprintf(stderr, "%-20s %-20s\n", "repositoryId", "repositoryName");
 
-	curl = curl_easy_init();
+			for (int i=0; i<size; i++) {
+				cJSON* item = cJSON_GetArrayItem(content, i);
 
-	if(curl){
-		curl_easy_setopt(curl, CURLOPT_URL, url);
+				if (item) {
+					cJSON* id = cJSON_GetObjectItem(item, "repoId");
+					cJSON* name = cJSON_GetObjectItem(item, "repoName");
+					repoIds[cnt++] = id->valueint;
 
-		curl_easy_setopt(curl, CURLOPT_POST, 1L);
-		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
-
-		list = curl_slist_append(list,cookie);
-		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
-
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS,"");
-		
-		curl_easy_setopt(curl, CURLOPT_WRITEDATA, (void*)buffer);
-		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, plainWrite);
-
-		res = curl_easy_perform(curl);
-
-		if(res != CURLE_OK)
+					if (id && name) {
+						fprintf(stderr, "%-20d %-20s\n", id->valueint, name->valuestring);
+					}
+				}
+			}
+		} else {
+			fprintf(stderr, "The repositories do not exist.\n");
 			return -1;
-
-		curl_easy_getinfo(curl, CURLINFO_HTTP_CODE, &stat);
-		if(stat != 201)
-			return -1;
-
-		curl_easy_cleanup(curl);
-
-	}else{
-		fprintf(stderr,"Error on curl...\n");
+		}
+	} else {
+		fprintf(stderr, "%s\n", message->valuestring);
+		return -1;
 	}
 
 	return 0;
 }
 
-static size_t showReposResponse(void *data, size_t size, size_t nmemb, void *clientp) {
-	cnt = 0;
-	cJSON *response = cJSON_Parse((const char*) data);
+static int getReposResponse(cJSON* response) {
+	const char* repo_path = "../myRepos";
+	struct stat dir_info;
 
-	if (response) {
-		cJSON *contentsArray = cJSON_GetObjectItem(response, "content");
-
-		if (contentsArray) {
-			int numItems = cJSON_GetArraySize(contentsArray);
-			fprintf(stderr, "\n\nInformation of your repositories: \n");
-			fprintf(stderr, "%-20s %-20s\n", "repositoryId", "repositoryName");
-
-			for (int i=0; i<numItems; i++) {
-				cJSON *item = cJSON_GetArrayItem(contentsArray, i);
-
-				if (item) {
-					cJSON *repoId = cJSON_GetObjectItem(item, "repoId");
-					cJSON *repoName = cJSON_GetObjectItem(item, "repoName");
-					repoIds[cnt++] = repoId->valueint;
-
-					if (repoId && repoName) {
-						fprintf(stderr, "%-20d %-20s\n", repoId->valueint, repoName->valuestring);
-					}
-				}
-			}
+	if (stat(repo_path, &dir_info) == 0) {
+		if (S_ISDIR(dir_info.st_mode)) {
+			makeReposJsonFile(response, repo_path);
 		} else {
+			fprintf(stderr, "Path exist, but it's not a directory.\n");
 			return -1;
 		}
 	} else {
-		return -1;
-	}
-
-	return size * nmemb;
-}
-
-static size_t getReposResponse(void *data, size_t size, size_t nmemb, void *clientp) {
-	char *dir_name = "../myRepos";
-	struct stat dir_info;
-	cJSON *response = cJSON_Parse((const char*) data);
-
-	if (response) {
-		if (stat(dir_name, &dir_info) == 0) {
-			if (S_ISDIR(dir_info.st_mode)) {
-				makeReposJsonFile(response, dir_name);
-			} else {
-				fprintf(stderr, "Path exist, but it's not a directory.\n");
-				return -1;
-			}
+		if (mkdir(repo_path, 0755) == 0) {
+			makeReposJsonFile(response, repo_path);
 		} else {
-			if (mkdir(dir_name, 0755) == 0) {
-				makeReposJsonFile(response, dir_name);
-			} else {
-				fprintf(stderr, "Error on creating directory.\n");
-				return -1;
-			}
+			fprintf(stderr, "Error on creating directory.\n");
+			return -1;
 		}
-	} else {
-		return -1;
 	}
 
-	return size * nmemb;
+	return 0;
 }
 
 static size_t submitResultResponse(void *data, size_t size, size_t nmemb, void *clientp) {
@@ -292,7 +251,7 @@ void deleteAllFile(const char dir_name[]) {
 }
 
 int showReposHTTP(const char home[]) {
-	char url[URLSIZE], cookie[BUFSIZE], response[BUFSIZE];
+	char url[URLSIZE], cookie[BUFSIZE], response[STRSIZE] = {'\0'};
 	CURL *curl;
 	CURLcode res;
 	struct curl_slist *list = NULL;
@@ -316,11 +275,16 @@ int showReposHTTP(const char home[]) {
 		list = curl_slist_append(list, cookie);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
 
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, showReposResponse);
+		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
 
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
+			return -1;
+		}
+
+		cJSON* json = cJSON_Parse(response);
+		if (showReposResponse(json) < 0) {
 			return -1;
 		}
 
@@ -333,7 +297,7 @@ int showReposHTTP(const char home[]) {
 }
 
 int getReposHTTP(const char home[], int repoId) {
-	char url[URLSIZE], cookie[BUFSIZE], response[BUFSIZE];
+	char url[URLSIZE], cookie[BUFSIZE], response[STRSIZE] = {'\0'};
 	CURL *curl;
 	CURLcode res;
 	struct curl_slist *list = NULL;
@@ -357,11 +321,17 @@ int getReposHTTP(const char home[], int repoId) {
 		list = curl_slist_append(list, cookie);
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
 
-        curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
-        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, getReposResponse);
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, writeCallback);
+		curl_easy_setopt(curl, CURLOPT_WRITEDATA, response);
 
 		res = curl_easy_perform(curl);
 		if (res != CURLE_OK) {
+			return -1;
+		}
+
+		cJSON* json = cJSON_Parse(response);
+
+		if (getReposResponse(json) < 0) {
 			return -1;
 		}
 

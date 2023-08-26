@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
 
-mkdir -p .ejs/cache && \
-mkdir -p .ejs/myRepos && \
-touch .ejs/cache/home.txt
+mkdir -p .ejp/cache && \
+mkdir -p .ejp/myRepos && \
+touch .ejp/cache/home.txt

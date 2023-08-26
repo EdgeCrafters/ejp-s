@@ -18,5 +18,6 @@ int showReposHTTP(const char home[]);
 int getReposHTTP(const char home[], int repoId);
 int getReposManager(const char home[]);
 void deleteAllFile(const char dir_name[]);
+void makeReposJsonFile(cJSON *data, char dir_name[]);
 
 int submitResultHTTP(const char home[], const char* output, int testcaseId);

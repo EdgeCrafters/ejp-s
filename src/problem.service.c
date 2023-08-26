@@ -1,5 +1,7 @@
 #include "http.h"
 
+void printProblemInfo(cJSON* problems, int index);
+void printTestcaseInfo(cJSON* testcases, int index);
 cJSON* getProblems(char* dir_path, int repoId);
 cJSON* getTestCases(cJSON* problems, int problemId);
 cJSON* getTestCase(cJSON* testcases, int testcaseId);
@@ -43,6 +45,11 @@ int testProblem(char location[]) {
     scanf("%d", &testcaseId);
 
     testcase = getTestCase(testcases, testcaseId);
+    cJSON* testcaseType = cJSON_GetObjectItem(testcase, "isHidden");
+    if (strcmp("HIDDEN", testcaseType->valuestring) == 0) {
+        fprintf(stderr, "You can not test with hidden testcase.\n");
+        return -1;
+    }
     if (testcase == NULL) {
         fprintf(stderr, "Please check the testcaseID\n");
         return -1;
