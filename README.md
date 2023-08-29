@@ -95,8 +95,8 @@ You can controll information of your repositories.
 
 #### ```[command]```
 
-0. ```show```: see information of your repositories.
-    <br/>
+0. ```show```: see information of your repositories.<br/><br/>
+
     - ```-h```: url of server
     <br/>
 
@@ -108,8 +108,8 @@ You can controll information of your repositories.
 ```
 <br/>
 
-1. ```get```: get information of your repositories. 
-    <br/>
+1. ```get```: get information of your repositories. <br/><br/>
+
     - ```-h```: url of server
     <br/>
 
@@ -121,12 +121,12 @@ You can controll information of your repositories.
 ```
 <br/>
 
-2. ```clean```: clean information of your repositories that saved local directory.
-    <br/>
-    ```
-        ejp-s repo clean
-    ```
-    <br/>
+2. ```clean```: clean information of your repositories that saved local directory. <br/><br/>
+
+```
+    ejp-s repo clean
+```
+<br/>
 
 ### problem
 
@@ -135,15 +135,15 @@ You can show testcases that opened or hidden.
 
 #### ```[command]```
 
-0. ```show```: see information of problems.
-    <br/>
-    ```
-        ejp-s problem show
-    ```
-    <br/>
+0. ```show```: see information of problems. <br/><br/>
 
-1. ```submit```: submit your answer. 
-    <br/>
+```
+    ejp-s problem show
+```
+<br/>
+
+1. ```submit```: submit your answer. <br/><br/>
+
     - ```-h```: url of server.
     - ```-l```: path to answer file. (compiled file)
     <br/>
@@ -156,8 +156,8 @@ You can show testcases that opened or hidden.
 ```
 <br/>
 
-2. ```test```: test your answer with testcase that published by your instructor.
-    <br/>
+2. ```test```: test your answer with testcase that published by your instructor. <br/><br/>
+
     - ```-l```: path to answer file. (compiled file)
     <br/>
 ```
@@ -168,9 +168,9 @@ You can show testcases that opened or hidden.
 ```
 <br/>
 
-3. ```testcase```: see information for testcases.
-    <br/>
-    ```
-        ejp-s problem testcase
-    ``` 
-    <br>
+3. ```testcase```: see information for testcases. <br/><br/>
+
+```
+    ejp-s problem testcase
+``` 
+<br>
