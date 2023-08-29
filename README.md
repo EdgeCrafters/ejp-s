@@ -95,37 +95,39 @@ You can controll information of your repositories.
 
 #### ```[command]```
 
-0. ```show```: see information of your repositories.<br/><br/>
+0. ```show```: see information of your repositories.<br/>
 
     - ```-h```: url of server
     <br/>
 
-```
-    ejp-s repo show -h [host address]
-```
-```
-    ejp-s repo show -h localhost:8000
-```
+    ```
+        ejp-s repo show -h [host address]
+    ```
+
+    ```
+        ejp-s repo show -h localhost:8000
+    ```
 <br/>
 
-1. ```get```: get information of your repositories. <br/><br/>
+1. ```get```: get information of your repositories. <br/>
 
     - ```-h```: url of server
     <br/>
 
-```
-    ejp-s repo get -h [host address]
-```
-```
-    ejp-s repo get -h localhost:8000
-```
+    ```
+        ejp-s repo get -h [host address]
+    ```
+
+    ```
+        ejp-s repo get -h localhost:8000
+    ```
 <br/>
 
-2. ```clean```: clean information of your repositories that saved local directory. <br/><br/>
+2. ```clean```: clean information of your repositories that saved local directory. <br/>
 
-```
-    ejp-s repo clean
-```
+    ```
+        ejp-s repo clean
+    ```
 <br/>
 
 ### problem
@@ -133,44 +135,50 @@ You can controll information of your repositories.
 You can submit and test your answer.<br/>
 You can show testcases that opened or hidden.
 
+```
+    ejp-s problem [command] [options]
+```
+
 #### ```[command]```
 
-0. ```show```: see information of problems. <br/><br/>
+0. ```show```: see information of problems. <br/>
 
-```
-    ejp-s problem show
-```
+    ```
+        ejp-s problem show
+    ```
 <br/>
 
-1. ```submit```: submit your answer. <br/><br/>
+1. ```submit```: submit your answer. <br/>
 
     - ```-h```: url of server.
     - ```-l```: path to answer file. (compiled file)
     <br/>
 
-```
-    ejp-s problem submit -h [host address] -l [path to answer file]
-```
-```
-    ejp-s problem submit -h localhost:8000 -l /myAnswers/answer1
-```
+    ```
+        ejp-s problem submit -h [host address] -l [path to answer file]
+    ```
+
+    ```
+        ejp-s problem submit -h localhost:8000 -l /myAnswers/answer1
+    ```
 <br/>
 
-2. ```test```: test your answer with testcase that published by your instructor. <br/><br/>
+2. ```test```: test your answer with testcase that published by your instructor. <br/>
 
     - ```-l```: path to answer file. (compiled file)
     <br/>
-```
-    ejp-s problem test -l [path to answer file]
-```
-```
-    ejp-s problem test /myAnswers/answer1
-```
+    ```
+        ejp-s problem test -l [path to answer file]
+    ```
+
+    ```
+        ejp-s problem test /myAnswers/answer1
+    ```
 <br/>
 
-3. ```testcase```: see information for testcases. <br/><br/>
+3. ```testcase```: see information for testcases. <br/>
 
-```
-    ejp-s problem testcase
-``` 
+    ```
+        ejp-s problem testcase
+    ``` 
 <br>
