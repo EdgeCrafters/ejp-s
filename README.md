@@ -100,26 +100,26 @@ You can controll information of your repositories.
     - ```-h```: url of server
     <br/>
 
-    ```
-        ejp-s repo show -h [host address]
-    ```
-    ```
-        ejp-s repo show -h localhost:8000
-    ```
-    <br/>
+```
+    ejp-s repo show -h [host address]
+```
+```
+    ejp-s repo show -h localhost:8000
+```
+<br/>
 
 1. ```get```: get information of your repositories. 
     <br/>
     - ```-h```: url of server
     <br/>
 
-    ```
-        ejp-s repo get -h [host address]
-    ```
-    ```
-        ejp-s repo get -h localhost:8000
-    ```
-    <br/>
+```
+    ejp-s repo get -h [host address]
+```
+```
+    ejp-s repo get -h localhost:8000
+```
+<br/>
 
 2. ```clean```: clean information of your repositories that saved local directory.
     <br/>
@@ -147,25 +147,26 @@ You can show testcases that opened or hidden.
     - ```-h```: url of server.
     - ```-l```: path to answer file. (compiled file)
     <br/>
-    ```
-        ejp-s problem submit -h [host address] -l [path to answer file]
-    ```
-    ```
-        ejp-s problem submit -h localhost:8000 -l /myAnswers/answer1
-    ```
-    <br/>
+
+```
+    ejp-s problem submit -h [host address] -l [path to answer file]
+```
+```
+    ejp-s problem submit -h localhost:8000 -l /myAnswers/answer1
+```
+<br/>
 
 2. ```test```: test your answer with testcase that published by your instructor.
     <br/>
     - ```-l```: path to answer file. (compiled file)
     <br/>
-    ```
-        ejp-s problem test -l [path to answer file]
-    ```
-    ```
-        ejp-s problem test /myAnswers/answer1
-    ```
-    <br/>
+```
+    ejp-s problem test -l [path to answer file]
+```
+```
+    ejp-s problem test /myAnswers/answer1
+```
+<br/>
 
 3. ```testcase```: see information for testcases.
     <br/>
