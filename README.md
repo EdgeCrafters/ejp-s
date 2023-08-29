@@ -3,16 +3,16 @@ EJP-S is a specialized component of the Edged Judger Platform (EJP) designed to 
 
 ## Table of Contents
 
-- [Highlights 🌟](#Highlights-🌟)
+- [Highlights 🌟](#Highlights-)
 
-- [Getting Started 📚](#Gettting-started-📚)
+- [Getting Started 📚](#Gettting-started-)
     - [Prerequisites](#Prerequisites)
     - [Installation](#Installation)
     - [Usage](#Usage)
 
-- [Contributing 🤝](#Contributing-🤝)
+- [Contributing 🤝](#Contributing-)
 
-- [License 📄](#License-📄)
+- [License 📄](#License-)
 
 - [Details](#Details)
     - [repo](#repo)
