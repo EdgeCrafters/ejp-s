@@ -47,7 +47,7 @@ EJP-S is a specialized component of the Edged Judger Platform (EJP) designed to 
 2. Navaigate to the cloned directory and run the installation script.
     ```
         cd ejp-s
-        sudo apt update && sudo apt install sudo apt install -y git git cmake gcc g++ pkg-config libkrb5-dev libssl-dev python3
+        sudo apt update -y && sudo apt install -y git git cmake gcc g++ pkg-config libkrb5-dev libssl-dev python3
         cmake -E make_directory build && cd build
         cmake .. && make
     ```
