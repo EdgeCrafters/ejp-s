@@ -47,7 +47,9 @@ EJP-S is a specialized component of the Edged Judger Platform (EJP) designed to 
 2. Navaigate to the cloned directory and run the installation script.
     ```
         cd ejp-s
-        ./install.sh
+        sudo apt update && sudo apt install sudo apt install -y git cmake build-essential
+        cmake -E make_directory build && cd build
+        cmake .. && make
     ```
 
 3. Follow the on-screen prompts to complete the installation.
