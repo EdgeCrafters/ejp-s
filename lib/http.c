@@ -53,6 +53,7 @@ int login(const char home[], const char id[], const char pw[])
 
 	if(curl){
 		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_PORT, 4000L);
 		
         curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "POST");
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
@@ -104,7 +105,8 @@ int logout(const char home[])
 
 	if(curl){
 		curl_easy_setopt(curl, CURLOPT_URL, url);
-		
+		curl_easy_setopt(curl, CURLOPT_PORT, 4000L);
+
 		curl_easy_setopt(curl, CURLOPT_POST, 1L);
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5L);
 
@@ -267,6 +269,8 @@ int showReposHTTP(const char home[]) {
 
 	if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_PORT, 4000L);
+
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
 
@@ -313,6 +317,8 @@ int getReposHTTP(const char home[], int repoId) {
 
 	if (curl) {
         curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_PORT, 4000L);
+
         curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
         curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
 
@@ -370,6 +376,8 @@ int submitResultHTTP(const char home[], const char* output, int testcaseId) {
 
 	if (curl) {
 		curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_PORT, 4000L);
+		
 		curl_easy_setopt(curl, CURLOPT_CUSTOMREQUEST, "PUT");
 		curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
 

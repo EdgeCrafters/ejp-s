@@ -13,6 +13,8 @@ FetchContent_MakeAvailable(libcurl)
 add_subdirectory(lib)
 add_subdirectory(src)
 
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/.ejp/ DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.ejp/)
+
 if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 elseif(MSVC)
