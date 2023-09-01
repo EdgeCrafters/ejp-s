@@ -170,7 +170,9 @@ static int showReposResponse(cJSON* response) {
 }
 
 static int getReposResponse(cJSON* response) {
-	const char* repo_path = "../myRepos";
+	// const char* repo_path = (char*) malloc(sizeof(char));
+	char repo_path[512];
+	sprintf(repo_path, "%s/../myRepos", exe);
 	struct stat dir_info;
 
 	if (stat(repo_path, &dir_info) == 0) {

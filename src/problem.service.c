@@ -7,7 +7,8 @@ cJSON* getTestCases(cJSON* problems, int problemId);
 cJSON* getTestCase(cJSON* testcases, int testcaseId);
 
 int showProblems() {
-    const char* repo_path = "../myRepos";
+    char repo_path[512];
+	sprintf(repo_path, "%s/../myRepos", exe);
     int repoId = 0, problemCount = 0;
     cJSON* problems = NULL;
 
@@ -84,7 +85,8 @@ int testProblem(char location[]) {
 }
 
 int submitResult(char home[], char location[]) {
-    const char* repo_path = "../myRepos";
+    char repo_path[512];
+	sprintf(repo_path, "%s/../myRepos", exe);
     char* output = (char*) malloc(512*sizeof(char));
     int testcaseId = 0;
     cJSON *testcases = NULL;
@@ -115,7 +117,8 @@ int submitResult(char home[], char location[]) {
 }
 
 int showTestcases(cJSON** testcasesPtr) {
-    const char* repo_path = "../myRepos";
+    char repo_path[512];
+	sprintf(repo_path, "%s/../myRepos", exe);
     int repoId = 0, problemId = 0, problemCount = 0, testCaseCount = 0;
     cJSON *problems = NULL;
     cJSON *testcases = NULL;
