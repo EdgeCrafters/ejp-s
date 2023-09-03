@@ -24,6 +24,8 @@ int getRepos(char home[]) {
 }
 
 int cleanRepos() {
-    deleteAllFile("../myRepos");
+    char repo_path[512];
+	sprintf(repo_path, "%s/../myRepos", exe);
+    deleteAllFile(repo_path);
     return 0;
 }
