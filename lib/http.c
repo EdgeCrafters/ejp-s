@@ -213,15 +213,18 @@ static size_t submitResultResponse(void *data, size_t size, size_t nmemb, void *
 void makeReposJsonFile(cJSON *data, char dir_name[]) {
 	cJSON *repoId = cJSON_GetObjectItem(data, "id");
 	cJSON *repoName = cJSON_GetObjectItem(data, "name");
-	cJSON *json_obj = cJSON_Print(data);
+	char *json_obj = cJSON_Print(data);
 	char file_path[512];
+
+	if(!repoId || !repoName)
+		return;
 
 	sprintf(file_path, "%s/%d_%s.json", dir_name, repoId->valueint, repoName->valuestring);
 	FILE *json_file = fopen(file_path, "w");
 
 	if (json_file) {
 		fprintf(json_file, "%s\n", json_obj);
-		printf("Success to make json file named %s\n", file_path);
+		fprintf(stderr,"Success to make json file named %s\n", file_path);
 		fclose(json_file);
 	} else {
 		fprintf(stderr, "Fail to make json file.\n");
