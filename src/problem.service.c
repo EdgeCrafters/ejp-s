@@ -6,6 +6,46 @@ cJSON* getProblems(char* dir_path, int repoId);
 cJSON* getTestCases(cJSON* problems, int problemId);
 cJSON* getTestCase(cJSON* testcases, int testcaseId);
 
+int getProblemsFile(const char home[], const char location[]) {
+    char repo_path[512];
+	sprintf(repo_path, "%s/../myRepos", exe);
+    int repoId = 0;
+    cJSON* problems = NULL;
+
+    if (showRepoInfos(repo_path) < 0) {
+        return -1;
+    }
+
+    fprintf(stderr,"\n\nPlease enter the ID of the repository: ");
+    scanf("%d", &repoId);
+
+    problems = getProblems(repo_path, repoId);
+    if (problems == NULL) {
+        return -1;
+    }
+
+    int i = 0, problemCount = cJSON_GetArraySize(problems);
+    cJSON *problem = NULL;
+    fprintf(stderr,"\n\nInformation of problems: \n");
+    fprintf(stderr,"%-20s %-20s %-20s\n", "Id", "Title", "Description");
+    for (problem = cJSON_GetArrayItem(problems,i); i<problemCount && problem; problem = cJSON_GetArrayItem(problems,i++)) 
+    {
+        cJSON *problemId = cJSON_GetObjectItem(problem,"id"), *title = cJSON_GetObjectItem(problem,"title"), *text = cJSON_GetObjectItem(problem,"text");
+        if(!problemId || !title || !text)
+            continue;
+        
+        fprintf(stderr,"%-20d %-20s %-20s\n",problemId->valueint,title->valuestring,text->valuestring);
+    }
+
+    int problemId;
+    fprintf(stderr,"select problem id to download: ");
+    scanf("%d",&problemId);
+
+    getProblemFilesHTTP(home,problemId,location);
+
+    return 0;
+}
+
 int showProblems() {
     char repo_path[512];
 	sprintf(repo_path, "%s/../myRepos", exe);
@@ -108,6 +148,7 @@ int submitResult(char home[], char location[]) {
     cJSON *input = cJSON_GetObjectItem(testcase, "input");
 
     execute(location, input->valuestring, output);
+    fprintf(stderr,"%s",output);
 
     if (submitResultHTTP(home, output, testcaseId) < 0) {
         return -1;
@@ -181,8 +222,8 @@ int showRepoInfos(char* dir_path) {
         return -1;
     }
 
-    printf("\n\nInformation of your repositories: \n");
-    printf("%-20s %-20s\n", "repositoryId", "repositoryName");
+    fprintf(stderr,"\n\nInformation of your repositories: \n");
+    fprintf(stderr,"%-20s %-20s\n", "repositoryId", "repositoryName");
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_type == DT_REG) {
             const char* file_name = entry->d_name;

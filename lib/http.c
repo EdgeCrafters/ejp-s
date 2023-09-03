@@ -5,6 +5,11 @@ unsigned int writeidx;
 unsigned int repoIds[10000];
 unsigned int cnt = 0;
 
+static size_t write_data(void *ptr, size_t size, size_t nmemb, void *stream)
+{
+  size_t written = fwrite(ptr, size, nmemb, (FILE *)stream);
+  return written;
+}
 
 static size_t plainWrite(void *data, size_t size, size_t nmemb, void *clientp)
 {
@@ -224,7 +229,7 @@ void makeReposJsonFile(cJSON *data, char dir_name[]) {
 
 	if (json_file) {
 		fprintf(json_file, "%s\n", json_obj);
-		fprintf(stderr,"Success to make json file named %s\n", file_path);
+		fprintf(stderr,"Success to cache workbook (id : %d title : %s)\n", repoId->valueint, repoName->valuestring);
 		fclose(json_file);
 	} else {
 		fprintf(stderr, "Fail to make json file.\n");
@@ -418,3 +423,52 @@ int submitResultHTTP(const char home[], const char* output, int testcaseId) {
 	return 0;
 }
 
+int getProblemFilesHTTP(const char home[], int problemId, const char location[]) {
+	char url[URLSIZE], cookie[BUFSIZE], response[STRSIZE] = {'\0'}, resultFilePath[PATHSIZE] = {0};
+	CURL *curl;
+	CURLcode res;
+	struct curl_slist *list = NULL;
+	long stat;
+
+	memset(url, 0, URLSIZE);
+	sprintf(url, "%s/repos/files/%d", home, problemId);
+
+	memset(cookie, 0, BUFSIZE);
+	sprintf(cookie, "Cookie: %s", session.data);
+
+	sprintf(resultFilePath, "%s/problemId_%d.tar", location,problemId);
+
+	curl = curl_easy_init();
+
+	if (curl) {
+        curl_easy_setopt(curl, CURLOPT_URL, url);
+		curl_easy_setopt(curl, CURLOPT_PORT, 4000L);
+
+        curl_easy_setopt(curl, CURLOPT_HTTPGET, 1L);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 5000L);
+
+		list = curl_slist_append(list, "Accept: */*");
+        list = curl_slist_append(list, "Content-Type: application/json");
+		list = curl_slist_append(list, cookie);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+
+  		curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_data);
+		FILE *resultFile = fopen(resultFilePath,"wb");
+		if(resultFile)
+			curl_easy_setopt(curl, CURLOPT_WRITEDATA, resultFile);
+		else
+			return -1;
+
+		res = curl_easy_perform(curl);
+		if (res != CURLE_OK) {
+			return -1;
+		}
+
+		curl_easy_cleanup(curl);
+		fclose(resultFile);
+	} else {
+		return -1;
+	}
+
+	return 0;
+}
