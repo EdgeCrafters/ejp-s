@@ -10,7 +10,7 @@ sudo apt update
 sudo apt install -y git cmake g++ pkg-config libkrb5-dev libssl-dev python3
 
 # # Clone the repository
-# git clone https://github.com/EdgeCrafters/ejp-t.git
+# git clone https://github.com/EdgeCrafters/ejp-s.git
 # # Navigate to the project directory
 # cd ejp-t
 
@@ -33,16 +33,15 @@ make
 # This will make it easier to run the application from anywhere.
 # Replace "path_to_your_executable" with the actual path.
 
-# Add EJP-T as an environment variable
+# Add EJP-S as an environment variable
 if [[ $SHELL == *"bash"* ]]; then
-  echo "export PATH=PATH:$(pwd)/src" >> ~/.bashrc
-  source ~/.bashrc
+  echo "export PATH=\$PATH:$(pwd)/src" >> ~/.bashrc
 elif [[ $SHELL == *"zsh"* ]]; then
-  echo "export EJP_T=PATH:$(pwd)/src" >> ~/.zshrc
-  source ~/.zshrc
+  echo "export PATH=\$PATH:$(pwd)/src" >> ~/.zshrc
 else
   echo "Unsupported shell. Please add manually."
 fi
+
 
 echo "Installation completed successfully."
 
