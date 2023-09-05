@@ -46,10 +46,10 @@ EJP-S is a specialized component of the Edged Judger Platform (EJP) designed to 
 
 2. Navaigate to the cloned directory and run the installation script.
     ```
-        cd ejp-s
+        cd ejp-s && chmod 755 scripts/setup.sh && chmod 755 scripts/install.sh
         ./scripts/setup.sh && ./scripts/install.sh
         source ~/.bashrc
-        #source ~/.zshrc (if you use zsh, or whatever, customize this command)
+        # source ~/.zshrc (if you use zsh, or whatever, customize this command)
     ```
 
 3. Follow the on-screen prompts to complete the installation.
